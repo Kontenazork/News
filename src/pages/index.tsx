@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DashboardMetrics, Article } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
@@ -30,28 +30,7 @@ export default function Dashboard() {
   const [combinedReport, setCombinedReport] = useState<string | null>(null);
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    setLoading(true);
-    try {
-      const data = await mockDataService.getDashboardMetrics();
-      setMetrics(data);
-      
-      // Generate combined report from recent articles
-      if (data.recentArticles.length > 0) {
-        generateCombinedReport(data.recentArticles);
-      }
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateCombinedReport = (articles: Article[]) => {
+  const generateCombinedReport = useCallback((articles: Article[]) => {
     // In a real implementation, this would call an API to have the editor generate a combined report
     // For now, we'll create a mock combined report based on the articles
     
@@ -89,7 +68,28 @@ export default function Dashboard() {
     
     setCombinedReport(report);
     setReportDate(new Date().toLocaleDateString());
-  };
+  }, []);
+
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await mockDataService.getDashboardMetrics();
+      setMetrics(data);
+      
+      // Generate combined report from recent articles
+      if (data.recentArticles.length > 0) {
+        generateCombinedReport(data.recentArticles);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [generateCombinedReport]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
