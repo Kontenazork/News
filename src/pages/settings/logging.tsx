@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -116,7 +116,7 @@ export default function LoggingPage() {
   const [levelFilter, setLevelFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
 
-  const filterLogs = () => {
+  const filterLogs = useCallback(() => {
     let filtered = [...logs];
     
     // Apply level filter
@@ -139,11 +139,11 @@ export default function LoggingPage() {
     }
     
     setFilteredLogs(filtered);
-  };
+  }, [logs, levelFilter, sourceFilter, searchQuery]);
 
   useEffect(() => {
     filterLogs();
-  }, [logs, searchQuery, levelFilter, sourceFilter]);
+  }, [filterLogs]);
 
   const handleRefresh = () => {
     setLoading(true);
