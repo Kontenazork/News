@@ -203,6 +203,154 @@ class MockDataService {
     console.log("Settings updated:", settings);
   }
 
+  async getArticles(): Promise<Article[]> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Return a list of all articles
+    return [
+      {
+        id: "1",
+        title: "New Breakthrough in Quantum Computing",
+        content: "Researchers at MIT have achieved a significant breakthrough in quantum computing stability, maintaining quantum coherence for over 10 minutes. This development could accelerate the path to practical quantum computing applications in various fields including cryptography and complex system modeling.",
+        source: "MIT Technology Review",
+        sourceUrl: "https://example.com/quantum-breakthrough",
+        publicationDate: "2025-03-01T12:00:00Z",
+        imageUrl: "https://images.unsplash.com/photo-1593941707882-a5bba53b0097?q=80&w=1000",
+        relevanceScores: {
+          technical: 4.8,
+          business: 4.2,
+          sustainability: 3.5,
+          overall: 4.5
+        },
+        businessField: "HPC",
+        keyInnovations: [
+          "Extended quantum coherence time to over 10 minutes",
+          "New error correction algorithms for quantum states",
+          "Room-temperature quantum operation demonstration",
+          "Scalable architecture compatible with existing fabrication methods"
+        ],
+        actionableInsights: [
+          "Monitor this research team for potential partnership opportunities",
+          "Evaluate impact on our current encryption standards",
+          "Consider implications for our HPC roadmap",
+          "Assess potential integration with KontenaCluster for hybrid quantum-classical computing",
+          "Explore training opportunities for our engineering team on quantum algorithms"
+        ]
+      },
+      {
+        id: "2",
+        title: "Bitcoin Mining Using Excess Renewable Energy",
+        content: "A new approach to Bitcoin mining is gaining traction, utilizing excess renewable energy that would otherwise be wasted. Several operations in Iceland and Norway are now using geothermal and hydroelectric power during off-peak hours, significantly reducing the carbon footprint of cryptocurrency mining while maintaining profitability.",
+        source: "CoinDesk",
+        sourceUrl: "https://example.com/bitcoin-renewable",
+        publicationDate: "2025-02-28T09:15:00Z",
+        relevanceScores: {
+          technical: 3.9,
+          business: 4.5,
+          sustainability: 4.7,
+          overall: 4.3
+        },
+        businessField: "Bitcoin",
+        keyInnovations: [
+          "Smart switching systems to utilize only excess renewable energy",
+          "Predictive algorithms for optimal energy usage timing",
+          "Containerized mining operations for mobility to energy sources",
+          "Custom firmware that optimizes mining hardware for variable power conditions"
+        ],
+        actionableInsights: [
+          "Explore similar approaches for our data centers",
+          "Investigate partnerships with renewable energy providers",
+          "Calculate potential cost savings from this model",
+          "Consider adapting KontenaMiner hardware for opportunistic mining scenarios",
+          "Evaluate regulatory implications in different jurisdictions"
+        ]
+      },
+      {
+        id: "3",
+        title: "Breakthrough in Solid-State Battery Technology",
+        content: "Toyota and Panasonic have jointly announced a major breakthrough in solid-state battery technology, achieving energy densities of 400 Wh/kg while maintaining fast charging capabilities. The new batteries are expected to enter production within two years and could revolutionize both electric vehicles and grid-scale energy storage.",
+        source: "Electrek",
+        sourceUrl: "https://example.com/solid-state-battery",
+        publicationDate: "2025-02-25T14:30:00Z",
+        relevanceScores: {
+          technical: 4.3,
+          business: 4.0,
+          sustainability: 4.8,
+          overall: 4.4
+        },
+        businessField: "Energy Storage",
+        keyInnovations: [
+          "New ceramic electrolyte material with superior conductivity",
+          "Manufacturing process compatible with existing production lines",
+          "Extended cycle life of over 2,000 complete charges",
+          "Energy density of 400 Wh/kg—nearly double current lithium-ion batteries",
+          "Improved safety with elimination of flammable liquid electrolytes"
+        ],
+        actionableInsights: [
+          "Evaluate implications for our energy storage projects",
+          "Consider early partnership or licensing opportunities",
+          "Assess impact on our current battery suppliers",
+          "Explore potential integration with KontenaStore systems",
+          "Update our energy storage roadmap to account for this technology"
+        ]
+      },
+      {
+        id: "4",
+        title: "Advanced Cooling Systems for Data Centers",
+        content: "A new liquid cooling technology developed by Cooler Master promises to reduce data center energy consumption by up to 40%. The system uses a non-conductive fluid that directly contacts server components, dramatically improving heat transfer efficiency compared to traditional air cooling.",
+        source: "Data Center Dynamics",
+        sourceUrl: "https://example.com/liquid-cooling-datacenter",
+        publicationDate: "2025-02-20T10:15:00Z",
+        relevanceScores: {
+          technical: 4.6,
+          business: 4.4,
+          sustainability: 4.9,
+          overall: 4.6
+        },
+        businessField: "HPC",
+        keyInnovations: [
+          "Direct-to-chip liquid cooling technology",
+          "Non-conductive fluid with improved thermal properties",
+          "Modular design for easy retrofitting of existing data centers",
+          "AI-controlled flow optimization system"
+        ],
+        actionableInsights: [
+          "Evaluate potential for implementation in our Helsinki data center",
+          "Calculate ROI based on our current cooling costs",
+          "Consider pilot program for high-density compute racks",
+          "Assess compatibility with KontenaCluster hardware"
+        ]
+      },
+      {
+        id: "5",
+        title: "Regulatory Changes for Cryptocurrency Mining in EU",
+        content: "The European Parliament has approved new regulations that will require cryptocurrency mining operations to disclose their energy consumption and carbon footprint. Operations exceeding certain thresholds will need to implement renewable energy solutions or purchase carbon offsets.",
+        source: "Bloomberg",
+        sourceUrl: "https://example.com/eu-crypto-regulations",
+        publicationDate: "2025-02-18T14:30:00Z",
+        relevanceScores: {
+          technical: 2.8,
+          business: 4.7,
+          sustainability: 4.5,
+          overall: 4.0
+        },
+        businessField: "Bitcoin",
+        keyInnovations: [
+          "Standardized energy reporting framework",
+          "Tiered compliance requirements based on operation size",
+          "Carbon offset marketplace specifically for digital assets"
+        ],
+        actionableInsights: [
+          "Review our Zurich operation's compliance with new requirements",
+          "Accelerate renewable energy integration plans",
+          "Engage with EU regulators on implementation timeline",
+          "Consider strategic partnerships with carbon offset providers"
+        ]
+      }
+    ];
+  }
+
   async getArticleById(id: string): Promise<Article> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 700));
@@ -293,6 +441,59 @@ class MockDataService {
           "Assess impact on our current battery suppliers",
           "Explore potential integration with KontenaStore systems",
           "Update our energy storage roadmap to account for this technology"
+        ]
+      },
+      {
+        id: "4",
+        title: "Advanced Cooling Systems for Data Centers",
+        content: "A new liquid cooling technology developed by Cooler Master promises to reduce data center energy consumption by up to 40%. The system uses a non-conductive fluid that directly contacts server components, dramatically improving heat transfer efficiency compared to traditional air cooling.\n\nThe technology, called ImmersaCool, has been in development for over five years and has undergone extensive testing in partnership with several major cloud providers. Early adopters report not only significant energy savings but also improved hardware lifespan due to more consistent operating temperatures.\n\n\"What makes our approach different is the combination of the fluid chemistry and the circulation system,\" explained Dr. Lisa Wong, CTO of Cooler Master's data center division. \"We've developed a fluid that has exceptional thermal properties while remaining completely safe for electronic components, even in the event of leaks.\"\n\nThe modular design allows for retrofitting existing data centers without complete infrastructure overhauls. The company claims ROI periods of 12-18 months for most implementations, primarily through reduced electricity costs and increased rack density.\n\nThe system also includes an AI-controlled flow optimization system that continuously adjusts cooling parameters based on workload, ambient conditions, and historical performance data.",
+        source: "Data Center Dynamics",
+        sourceUrl: "https://example.com/liquid-cooling-datacenter",
+        publicationDate: "2025-02-20T10:15:00Z",
+        relevanceScores: {
+          technical: 4.6,
+          business: 4.4,
+          sustainability: 4.9,
+          overall: 4.6
+        },
+        businessField: "HPC",
+        keyInnovations: [
+          "Direct-to-chip liquid cooling technology",
+          "Non-conductive fluid with improved thermal properties",
+          "Modular design for easy retrofitting of existing data centers",
+          "AI-controlled flow optimization system"
+        ],
+        actionableInsights: [
+          "Evaluate potential for implementation in our Helsinki data center",
+          "Calculate ROI based on our current cooling costs",
+          "Consider pilot program for high-density compute racks",
+          "Assess compatibility with KontenaCluster hardware"
+        ]
+      },
+      {
+        id: "5",
+        title: "Regulatory Changes for Cryptocurrency Mining in EU",
+        content: "The European Parliament has approved new regulations that will require cryptocurrency mining operations to disclose their energy consumption and carbon footprint. Operations exceeding certain thresholds will need to implement renewable energy solutions or purchase carbon offsets.\n\nThe legislation, which passed with broad support, establishes a tiered compliance framework based on operation size and energy consumption. Small-scale miners will face minimal reporting requirements, while large mining farms will need to meet stringent renewable energy targets.\n\n\"This balanced approach ensures that Europe remains open to innovation in the digital asset space while addressing legitimate environmental concerns,\" said MEP Clara Bergmann, one of the legislation's key architects.\n\nThe regulations also establish a specialized carbon offset marketplace for digital asset operations, with verification standards specifically designed for the industry. Critics argue this could increase operational costs by 15-30% for non-renewable operations, while supporters point to the potential acceleration of green mining technologies.\n\nImplementation will be phased over three years, with reporting requirements beginning in 2026 and full compliance with renewable energy targets required by 2028. The legislation includes provisions for technical assistance to help smaller operations adapt to the new requirements.",
+        source: "Bloomberg",
+        sourceUrl: "https://example.com/eu-crypto-regulations",
+        publicationDate: "2025-02-18T14:30:00Z",
+        relevanceScores: {
+          technical: 2.8,
+          business: 4.7,
+          sustainability: 4.5,
+          overall: 4.0
+        },
+        businessField: "Bitcoin",
+        keyInnovations: [
+          "Standardized energy reporting framework",
+          "Tiered compliance requirements based on operation size",
+          "Carbon offset marketplace specifically for digital assets"
+        ],
+        actionableInsights: [
+          "Review our Zurich operation's compliance with new requirements",
+          "Accelerate renewable energy integration plans",
+          "Engage with EU regulators on implementation timeline",
+          "Consider strategic partnerships with carbon offset providers"
         ]
       }
     ];
