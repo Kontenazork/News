@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Calendar, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 
 interface NewsCardProps {
   article: Article;
@@ -40,10 +41,14 @@ export function NewsCard({ article }: NewsCardProps) {
   };
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-lg font-bold line-clamp-2">{article.title}</CardTitle>
+          <Link href={`/news/${article.id}`}>
+            <CardTitle className="text-lg font-bold line-clamp-2 hover:text-primary transition-colors">
+              {article.title}
+            </CardTitle>
+          </Link>
           <Badge variant="outline" className={cn("ml-2 whitespace-nowrap", getBusinessFieldColor(article.businessField))}>
             {article.businessField}
           </Badge>
@@ -62,15 +67,17 @@ export function NewsCard({ article }: NewsCardProps) {
       </CardHeader>
       {article.imageUrl && (
         <div className="px-6 pt-2">
-          <div className="aspect-video relative rounded-md overflow-hidden">
-            <Image 
-              src={article.imageUrl} 
-              alt={article.title} 
-              className="object-cover"
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          </div>
+          <Link href={`/news/${article.id}`}>
+            <div className="aspect-video relative rounded-md overflow-hidden">
+              <Image 
+                src={article.imageUrl} 
+                alt={article.title} 
+                className="object-cover hover:scale-105 transition-transform duration-300"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
+          </Link>
         </div>
       )}
       <CardContent className="py-4 flex-grow">
@@ -101,14 +108,22 @@ export function NewsCard({ article }: NewsCardProps) {
       <CardFooter className="pt-2 border-t">
         <div className="flex justify-between items-center w-full text-sm">
           <span className="text-muted-foreground">{article.source}</span>
-          <a 
-            href={article.sourceUrl} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="flex items-center text-primary hover:underline"
-          >
-            Read more <ExternalLink className="h-3 w-3 ml-1" />
-          </a>
+          <div className="flex items-center gap-4">
+            <Link 
+              href={`/news/${article.id}`}
+              className="text-primary hover:underline"
+            >
+              View details
+            </Link>
+            <a 
+              href={article.sourceUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center text-primary hover:underline"
+            >
+              Source <ExternalLink className="h-3 w-3 ml-1" />
+            </a>
+          </div>
         </div>
       </CardFooter>
     </Card>
