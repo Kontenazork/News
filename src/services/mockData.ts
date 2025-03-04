@@ -363,11 +363,8 @@ class MockDataService {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 700));
     
-    // This would normally fetch from an API, but we'll return mock data
-    const articles = [
-      // ... same articles as above ...
-    ];
-    
+    // Get all articles and find the one with matching ID
+    const articles = await this.getArticles();
     const article = articles.find(a => a.id === id);
     
     if (!article) {
@@ -591,4 +588,5 @@ class MockDataService {
   }
 }
 
-export default MockDataService;
+// Create and export an instance of the service
+export const mockDataService = new MockDataService();
