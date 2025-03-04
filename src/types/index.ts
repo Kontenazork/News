@@ -38,6 +38,11 @@ export interface CompanyBranch {
 
 export interface Settings {
   basePrompt: string;
+  perplexityPrompt?: string;
+  perplexityAutoRetry?: boolean;
+  perplexityStream?: boolean;
+  perplexityMaxTokens?: number;
+  perplexityTemperature?: number;
   companyBranches: CompanyBranch[];
   keywords: string[];
   timeframe: number; // in days
