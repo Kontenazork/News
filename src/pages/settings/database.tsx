@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Save, X, Plus, Edit, Trash2, Code } from "lucide-react";
+import { Loader2, Save, X, Plus, Edit, Trash2, Code, Info } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { 
   Card, 
@@ -47,6 +47,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function DatabaseSettingsPage() {
   const [schema, setSchema] = useState<DatabaseSchema | null>(null);
@@ -160,7 +166,6 @@ export default function DatabaseSettingsPage() {
     let jsonString = JSON.stringify(sampleArticle, null, jsonOptions);
     
     // If includeNulls is false, we need to filter out null values
-    // This is a simplified approach - in a real app, you'd want to handle this more robustly
     if (!schemaData.formatOptions.includeNulls) {
       const obj = JSON.parse(jsonString);
       const filtered = Object.fromEntries(
@@ -330,11 +335,27 @@ export default function DatabaseSettingsPage() {
   return (
     <div className="container max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Database Settings</h1>
+        <h1 className="text-2xl font-bold">Database & Perplexity Output Settings</h1>
         <p className="text-muted-foreground mt-1">
-          Configure database schema and output format
+          Configure how data is structured and how Perplexity should format its findings
         </p>
       </div>
+      
+      <Card className="mb-6 border-primary/20 bg-primary/5">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Info className="h-5 w-5" />
+            How Perplexity Output Works
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm">
+            The fields and format defined here determine how Perplexity AI structures its findings. 
+            When Perplexity searches for news articles, it will return data in the structure you define here.
+            Each field represents a piece of information that Perplexity will extract or generate.
+          </p>
+        </CardContent>
+      </Card>
       
       <Tabs defaultValue="fields">
         <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -347,7 +368,7 @@ export default function DatabaseSettingsPage() {
             <CardHeader>
               <CardTitle>Add New Field</CardTitle>
               <CardDescription>
-                Create a new field for the database schema
+                Create a new field for Perplexity to extract or generate
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -415,9 +436,9 @@ export default function DatabaseSettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Database Fields</CardTitle>
+              <CardTitle>Perplexity Output Fields</CardTitle>
               <CardDescription>
-                Manage fields in the database schema
+                Fields that Perplexity will extract or generate for each article
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -560,9 +581,9 @@ export default function DatabaseSettingsPage() {
         <TabsContent value="output" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Output Format</CardTitle>
+              <CardTitle>Perplexity Output Format</CardTitle>
               <CardDescription>
-                Configure how data is formatted for output
+                Configure how Perplexity should format its findings
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -583,7 +604,7 @@ export default function DatabaseSettingsPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Choose the format for data output. JSON is recommended for most use cases.
+                    Choose the format for Perplexity output. JSON is recommended for most use cases.
                   </p>
                 </div>
                 
@@ -620,10 +641,27 @@ export default function DatabaseSettingsPage() {
           
           <Card>
             <CardHeader>
-              <CardTitle>JSON Preview</CardTitle>
-              <CardDescription>
-                Preview of how the data will be formatted
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Sample Output Preview</CardTitle>
+                  <CardDescription>
+                    How Perplexity will format its findings based on your settings
+                  </CardDescription>
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Code className="h-4 w-4 mr-2" />
+                        Copy
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Copy sample output to clipboard</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="bg-muted p-4 rounded-md overflow-auto max-h-[400px]">
@@ -632,7 +670,7 @@ export default function DatabaseSettingsPage() {
                 </pre>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
-                This is a sample preview based on your current schema and format settings.
+                This is a sample of how Perplexity will structure its findings based on your current schema and format settings.
               </p>
             </CardContent>
           </Card>
