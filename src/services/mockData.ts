@@ -1,5 +1,13 @@
-
-import { DashboardMetrics, Settings, Article, ServiceStatus, DatabaseSchema } from "@/types";
+import {
+  DashboardMetrics,
+  Settings,
+  Article,
+  ServiceStatus,
+  DatabaseSchema,
+  CompanyBranch,
+  Product,
+  BusinessField
+} from "@/types";
 
 class MockDataService {
   async getDashboardMetrics(): Promise<DashboardMetrics> {
@@ -18,7 +26,7 @@ class MockDataService {
         {
           id: "1",
           title: "New Breakthrough in Quantum Computing",
-          content: "Researchers at MIT have achieved a significant breakthrough in quantum computing stability, maintaining quantum coherence for over 10 minutes. This development could accelerate the path to practical quantum computing applications in various fields including cryptography and complex system modeling.",
+          content: "Researchers at MIT...",
           source: "MIT Technology Review",
           sourceUrl: "https://example.com/quantum-breakthrough",
           publicationDate: "2025-03-01T12:00:00Z",
@@ -44,7 +52,7 @@ class MockDataService {
         {
           id: "2",
           title: "Bitcoin Mining Using Excess Renewable Energy",
-          content: "A new approach to Bitcoin mining is gaining traction, utilizing excess renewable energy that would otherwise be wasted. Several operations in Iceland and Norway are now using geothermal and hydroelectric power during off-peak hours, significantly reducing the carbon footprint of cryptocurrency mining while maintaining profitability.",
+          content: "A new approach to Bitcoin mining...",
           source: "CoinDesk",
           sourceUrl: "https://example.com/bitcoin-renewable",
           publicationDate: "2025-02-28T09:15:00Z",
@@ -69,7 +77,7 @@ class MockDataService {
         {
           id: "3",
           title: "Breakthrough in Solid-State Battery Technology",
-          content: "Toyota and Panasonic have jointly announced a major breakthrough in solid-state battery technology, achieving energy densities of 400 Wh/kg while maintaining fast charging capabilities. The new batteries are expected to enter production within two years and could revolutionize both electric vehicles and grid-scale energy storage.",
+          content: "Toyota and Panasonic have jointly announced...",
           source: "Electrek",
           sourceUrl: "https://example.com/solid-state-battery",
           publicationDate: "2025-02-25T14:30:00Z",
@@ -98,11 +106,11 @@ class MockDataService {
   async getSettings(): Promise<Settings> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 600));
-    
+
     return {
-      basePrompt: "Find the latest news and developments in high-performance computing, Bitcoin mining, and energy storage technologies. Focus on technical innovations, business implications, and sustainability aspects.",
-      editorPrompt: "Analyze and score articles based on their relevance to our business fields. Prioritize technical innovations and actionable insights. Format articles with clear structure and highlight key points.",
-      perplexityPrompt: "Search for recent developments in HPC, Bitcoin mining, and energy storage with a focus on technical breakthroughs and business implications.",
+      basePrompt: "Find the latest news and developments in...",
+      editorPrompt: "Analyze and score articles based on...",
+      perplexityPrompt: "Search for recent developments in...",
       perplexityAutoRetry: true,
       perplexityStream: true,
       perplexityMaxTokens: 1000,
@@ -111,7 +119,7 @@ class MockDataService {
         {
           id: "1",
           name: "Kontena HPC Division",
-          description: "Focuses on high-performance computing solutions and services",
+          description: "Focuses on high-performance computing...",
           location: "Helsinki, Finland",
           businessField: "HPC",
           products: [
@@ -132,7 +140,7 @@ class MockDataService {
         {
           id: "2",
           name: "Kontena Crypto",
-          description: "Specializes in cryptocurrency mining and blockchain solutions",
+          description: "Specializes in cryptocurrency mining...",
           location: "Zurich, Switzerland",
           businessField: "Bitcoin",
           products: [
@@ -147,7 +155,7 @@ class MockDataService {
         {
           id: "3",
           name: "Kontena Energy",
-          description: "Develops energy storage solutions for data centers",
+          description: "Develops energy storage solutions for...",
           location: "Stockholm, Sweden",
           businessField: "Energy Storage",
           products: [
@@ -212,7 +220,7 @@ class MockDataService {
       {
         id: "1",
         title: "New Breakthrough in Quantum Computing",
-        content: "Researchers at MIT have achieved a significant breakthrough in quantum computing stability, maintaining quantum coherence for over 10 minutes. This development could accelerate the path to practical quantum computing applications in various fields including cryptography and complex system modeling.",
+        content: "Researchers at MIT have achieved...",
         source: "MIT Technology Review",
         sourceUrl: "https://example.com/quantum-breakthrough",
         publicationDate: "2025-03-01T12:00:00Z",
@@ -226,22 +234,22 @@ class MockDataService {
         businessField: "HPC",
         keyInnovations: [
           "Extended quantum coherence time to over 10 minutes",
-          "New error correction algorithms for quantum states",
+          "New error correction algorithms...",
           "Room-temperature quantum operation demonstration",
-          "Scalable architecture compatible with existing fabrication methods"
+          "Scalable architecture compatible..."
         ],
         actionableInsights: [
-          "Monitor this research team for potential partnership opportunities",
-          "Evaluate impact on our current encryption standards",
-          "Consider implications for our HPC roadmap",
-          "Assess potential integration with KontenaCluster for hybrid quantum-classical computing",
-          "Explore training opportunities for our engineering team on quantum algorithms"
+          "Monitor this research team...",
+          "Evaluate impact on our current encryption standards...",
+          "Consider implications for our HPC roadmap...",
+          "Assess potential integration...",
+          "Explore training opportunities..."
         ]
       },
       {
         id: "2",
         title: "Bitcoin Mining Using Excess Renewable Energy",
-        content: "A new approach to Bitcoin mining is gaining traction, utilizing excess renewable energy that would otherwise be wasted. Several operations in Iceland and Norway are now using geothermal and hydroelectric power during off-peak hours, significantly reducing the carbon footprint of cryptocurrency mining while maintaining profitability.",
+        content: "A new approach to Bitcoin mining is gaining traction...",
         source: "CoinDesk",
         sourceUrl: "https://example.com/bitcoin-renewable",
         publicationDate: "2025-02-28T09:15:00Z",
@@ -254,22 +262,22 @@ class MockDataService {
         businessField: "Bitcoin",
         keyInnovations: [
           "Smart switching systems to utilize only excess renewable energy",
-          "Predictive algorithms for optimal energy usage timing",
-          "Containerized mining operations for mobility to energy sources",
-          "Custom firmware that optimizes mining hardware for variable power conditions"
+          "Predictive algorithms...",
+          "Containerized mining operations...",
+          "Custom firmware optimizing..."
         ],
         actionableInsights: [
-          "Explore similar approaches for our data centers",
-          "Investigate partnerships with renewable energy providers",
-          "Calculate potential cost savings from this model",
-          "Consider adapting KontenaMiner hardware for opportunistic mining scenarios",
-          "Evaluate regulatory implications in different jurisdictions"
+          "Explore similar approaches...",
+          "Investigate partnerships with renewable energy providers...",
+          "Calculate potential cost savings...",
+          "Consider adapting KontenaMiner...",
+          "Evaluate regulatory implications..."
         ]
       },
       {
         id: "3",
         title: "Breakthrough in Solid-State Battery Technology",
-        content: "Toyota and Panasonic have jointly announced a major breakthrough in solid-state battery technology, achieving energy densities of 400 Wh/kg while maintaining fast charging capabilities. The new batteries are expected to enter production within two years and could revolutionize both electric vehicles and grid-scale energy storage.",
+        content: "Toyota and Panasonic have jointly announced...",
         source: "Electrek",
         sourceUrl: "https://example.com/solid-state-battery",
         publicationDate: "2025-02-25T14:30:00Z",
@@ -282,23 +290,23 @@ class MockDataService {
         businessField: "Energy Storage",
         keyInnovations: [
           "New ceramic electrolyte material with superior conductivity",
-          "Manufacturing process compatible with existing production lines",
+          "Manufacturing process compatible...",
           "Extended cycle life of over 2,000 complete charges",
-          "Energy density of 400 Wh/kg—nearly double current lithium-ion batteries",
-          "Improved safety with elimination of flammable liquid electrolytes"
+          "Energy density of 400 Wh/kg...",
+          "Improved safety with elimination..."
         ],
         actionableInsights: [
           "Evaluate implications for our energy storage projects",
-          "Consider early partnership or licensing opportunities",
+          "Consider early partnership...",
           "Assess impact on our current battery suppliers",
-          "Explore potential integration with KontenaStore systems",
-          "Update our energy storage roadmap to account for this technology"
+          "Explore potential integration...",
+          "Update our energy storage roadmap..."
         ]
       },
       {
         id: "4",
         title: "Advanced Cooling Systems for Data Centers",
-        content: "A new liquid cooling technology developed by Cooler Master promises to reduce data center energy consumption by up to 40%. The system uses a non-conductive fluid that directly contacts server components, dramatically improving heat transfer efficiency compared to traditional air cooling.",
+        content: "A new liquid cooling technology developed by Cooler Master...",
         source: "Data Center Dynamics",
         sourceUrl: "https://example.com/liquid-cooling-datacenter",
         publicationDate: "2025-02-20T10:15:00Z",
@@ -312,20 +320,20 @@ class MockDataService {
         keyInnovations: [
           "Direct-to-chip liquid cooling technology",
           "Non-conductive fluid with improved thermal properties",
-          "Modular design for easy retrofitting of existing data centers",
+          "Modular design for easy retrofitting...",
           "AI-controlled flow optimization system"
         ],
         actionableInsights: [
-          "Evaluate potential for implementation in our Helsinki data center",
+          "Evaluate potential for implementation...",
           "Calculate ROI based on our current cooling costs",
-          "Consider pilot program for high-density compute racks",
+          "Consider pilot program...",
           "Assess compatibility with KontenaCluster hardware"
         ]
       },
       {
         id: "5",
         title: "Regulatory Changes for Cryptocurrency Mining in EU",
-        content: "The European Parliament has approved new regulations that will require cryptocurrency mining operations to disclose their energy consumption and carbon footprint. Operations exceeding certain thresholds will need to implement renewable energy solutions or purchase carbon offsets.",
+        content: "The European Parliament has approved new regulations...",
         source: "Bloomberg",
         sourceUrl: "https://example.com/eu-crypto-regulations",
         publicationDate: "2025-02-18T14:30:00Z",
@@ -339,13 +347,13 @@ class MockDataService {
         keyInnovations: [
           "Standardized energy reporting framework",
           "Tiered compliance requirements based on operation size",
-          "Carbon offset marketplace specifically for digital assets"
+          "Carbon offset marketplace specifically..."
         ],
         actionableInsights: [
-          "Review our Zurich operation's compliance with new requirements",
-          "Accelerate renewable energy integration plans",
-          "Engage with EU regulators on implementation timeline",
-          "Consider strategic partnerships with carbon offset providers"
+          "Review our Zurich operation's compliance...",
+          "Accelerate renewable energy integration plans...",
+          "Engage with EU regulators...",
+          "Consider strategic partnerships..."
         ]
       }
     ];
@@ -357,145 +365,7 @@ class MockDataService {
     
     // This would normally fetch from an API, but we'll return mock data
     const articles = [
-      {
-        id: "1",
-        title: "New Breakthrough in Quantum Computing",
-        content: "Researchers at MIT have achieved a significant breakthrough in quantum computing stability, maintaining quantum coherence for over 10 minutes. This development could accelerate the path to practical quantum computing applications in various fields including cryptography and complex system modeling.\n\nThe team, led by Professor Sarah Chen, used a novel approach combining superconducting qubits with a new type of error correction algorithm that continuously monitors and adjusts for quantum decoherence.\n\n\"What makes this particularly exciting is that we're now approaching coherence times that could make quantum computing practical for certain real-world applications,\" explained Chen. \"Previously, maintaining quantum states for even a few seconds was challenging.\"\n\nThe implications for high-performance computing are substantial. Quantum computers excel at solving certain types of problems that are practically impossible for classical computers, such as simulating complex quantum systems for drug discovery or optimizing massive datasets.\n\nIndustry experts suggest this breakthrough could accelerate the timeline for practical quantum advantage in commercial applications by several years. Companies including IBM, Google, and Microsoft have already expressed interest in the new techniques.",
-        source: "MIT Technology Review",
-        sourceUrl: "https://example.com/quantum-breakthrough",
-        publicationDate: "2025-03-01T12:00:00Z",
-        imageUrl: "https://images.unsplash.com/photo-1593941707882-a5bba53b0097?q=80&w=1000",
-        relevanceScores: {
-          technical: 4.8,
-          business: 4.2,
-          sustainability: 3.5,
-          overall: 4.5
-        },
-        businessField: "HPC",
-        keyInnovations: [
-          "Extended quantum coherence time to over 10 minutes",
-          "New error correction algorithms for quantum states",
-          "Room-temperature quantum operation demonstration",
-          "Scalable architecture compatible with existing fabrication methods"
-        ],
-        actionableInsights: [
-          "Monitor this research team for potential partnership opportunities",
-          "Evaluate impact on our current encryption standards",
-          "Consider implications for our HPC roadmap",
-          "Assess potential integration with KontenaCluster for hybrid quantum-classical computing",
-          "Explore training opportunities for our engineering team on quantum algorithms"
-        ]
-      },
-      {
-        id: "2",
-        title: "Bitcoin Mining Using Excess Renewable Energy",
-        content: "A new approach to Bitcoin mining is gaining traction, utilizing excess renewable energy that would otherwise be wasted. Several operations in Iceland and Norway are now using geothermal and hydroelectric power during off-peak hours, significantly reducing the carbon footprint of cryptocurrency mining while maintaining profitability.\n\nThe concept, known as \"opportunistic mining,\" involves deploying mobile mining units that can be quickly activated when excess renewable energy is available and shut down when demand from other sectors increases.\n\n\"The beauty of this approach is that we're essentially monetizing energy that would otherwise be wasted,\" said Erik Larsen, CEO of GreenHash, one of the companies pioneering this method. \"Renewable energy sources like wind and hydroelectric often generate excess capacity that can't be stored or transmitted efficiently.\"\n\nThe economics are compelling. By negotiating rates for otherwise wasted energy, these mining operations can secure electricity at costs 70-90% below standard industrial rates. This dramatically improves profitability even during periods of lower cryptocurrency prices.\n\nEnvironmental benefits are equally significant. Traditional Bitcoin mining has faced criticism for its substantial carbon footprint, with some estimates suggesting it consumes as much electricity as entire countries. This new approach could transform mining into a net positive for renewable energy development by providing a flexible demand source that improves the economic viability of new renewable projects.",
-        source: "CoinDesk",
-        sourceUrl: "https://example.com/bitcoin-renewable",
-        publicationDate: "2025-02-28T09:15:00Z",
-        relevanceScores: {
-          technical: 3.9,
-          business: 4.5,
-          sustainability: 4.7,
-          overall: 4.3
-        },
-        businessField: "Bitcoin",
-        keyInnovations: [
-          "Smart switching systems to utilize only excess renewable energy",
-          "Predictive algorithms for optimal energy usage timing",
-          "Containerized mining operations for mobility to energy sources",
-          "Custom firmware that optimizes mining hardware for variable power conditions"
-        ],
-        actionableInsights: [
-          "Explore similar approaches for our data centers",
-          "Investigate partnerships with renewable energy providers",
-          "Calculate potential cost savings from this model",
-          "Consider adapting KontenaMiner hardware for opportunistic mining scenarios",
-          "Evaluate regulatory implications in different jurisdictions"
-        ]
-      },
-      {
-        id: "3",
-        title: "Breakthrough in Solid-State Battery Technology",
-        content: "Toyota and Panasonic have jointly announced a major breakthrough in solid-state battery technology, achieving energy densities of 400 Wh/kg while maintaining fast charging capabilities. The new batteries are expected to enter production within two years and could revolutionize both electric vehicles and grid-scale energy storage.\n\nThe key innovation lies in a novel ceramic electrolyte material that allows for faster ion transport while eliminating the risk of thermal runaway that plagues traditional lithium-ion batteries. The solid-state design also enables higher energy density, longer cycle life, and improved safety.\n\n\"This represents the culmination of over a decade of research,\" said Dr. Takashi Yamamoto, lead scientist on the project. \"We've overcome the primary challenges that have limited solid-state battery commercialization: interface stability and manufacturing scalability.\"\n\nPerhaps most significantly, the companies claim their manufacturing process can be implemented using modified versions of existing production lines, potentially accelerating the timeline for mass production.\n\nFor grid-scale energy storage applications, the technology offers compelling advantages. The higher energy density means smaller footprint requirements for storage facilities, while the improved safety profile could reduce regulatory hurdles and insurance costs. The extended cycle life—reportedly over 2,000 complete charge-discharge cycles with minimal degradation—would significantly improve the economics of large-scale deployment.\n\nAnalysts suggest this development could accelerate the transition to renewable energy by addressing one of its primary challenges: cost-effective storage for intermittent generation sources like solar and wind.",
-        source: "Electrek",
-        sourceUrl: "https://example.com/solid-state-battery",
-        publicationDate: "2025-02-25T14:30:00Z",
-        relevanceScores: {
-          technical: 4.3,
-          business: 4.0,
-          sustainability: 4.8,
-          overall: 4.4
-        },
-        businessField: "Energy Storage",
-        keyInnovations: [
-          "New ceramic electrolyte material with superior conductivity",
-          "Manufacturing process compatible with existing production lines",
-          "Extended cycle life of over 2,000 complete charges",
-          "Energy density of 400 Wh/kg—nearly double current lithium-ion batteries",
-          "Improved safety with elimination of flammable liquid electrolytes"
-        ],
-        actionableInsights: [
-          "Evaluate implications for our energy storage projects",
-          "Consider early partnership or licensing opportunities",
-          "Assess impact on our current battery suppliers",
-          "Explore potential integration with KontenaStore systems",
-          "Update our energy storage roadmap to account for this technology"
-        ]
-      },
-      {
-        id: "4",
-        title: "Advanced Cooling Systems for Data Centers",
-        content: "A new liquid cooling technology developed by Cooler Master promises to reduce data center energy consumption by up to 40%. The system uses a non-conductive fluid that directly contacts server components, dramatically improving heat transfer efficiency compared to traditional air cooling.\n\nThe technology, called ImmersaCool, has been in development for over five years and has undergone extensive testing in partnership with several major cloud providers. Early adopters report not only significant energy savings but also improved hardware lifespan due to more consistent operating temperatures.\n\n\"What makes our approach different is the combination of the fluid chemistry and the circulation system,\" explained Dr. Lisa Wong, CTO of Cooler Master's data center division. \"We've developed a fluid that has exceptional thermal properties while remaining completely safe for electronic components, even in the event of leaks.\"\n\nThe modular design allows for retrofitting existing data centers without complete infrastructure overhauls. The company claims ROI periods of 12-18 months for most implementations, primarily through reduced electricity costs and increased rack density.\n\nThe system also includes an AI-controlled flow optimization system that continuously adjusts cooling parameters based on workload, ambient conditions, and historical performance data.",
-        source: "Data Center Dynamics",
-        sourceUrl: "https://example.com/liquid-cooling-datacenter",
-        publicationDate: "2025-02-20T10:15:00Z",
-        relevanceScores: {
-          technical: 4.6,
-          business: 4.4,
-          sustainability: 4.9,
-          overall: 4.6
-        },
-        businessField: "HPC",
-        keyInnovations: [
-          "Direct-to-chip liquid cooling technology",
-          "Non-conductive fluid with improved thermal properties",
-          "Modular design for easy retrofitting of existing data centers",
-          "AI-controlled flow optimization system"
-        ],
-        actionableInsights: [
-          "Evaluate potential for implementation in our Helsinki data center",
-          "Calculate ROI based on our current cooling costs",
-          "Consider pilot program for high-density compute racks",
-          "Assess compatibility with KontenaCluster hardware"
-        ]
-      },
-      {
-        id: "5",
-        title: "Regulatory Changes for Cryptocurrency Mining in EU",
-        content: "The European Parliament has approved new regulations that will require cryptocurrency mining operations to disclose their energy consumption and carbon footprint. Operations exceeding certain thresholds will need to implement renewable energy solutions or purchase carbon offsets.\n\nThe legislation, which passed with broad support, establishes a tiered compliance framework based on operation size and energy consumption. Small-scale miners will face minimal reporting requirements, while large mining farms will need to meet stringent renewable energy targets.\n\n\"This balanced approach ensures that Europe remains open to innovation in the digital asset space while addressing legitimate environmental concerns,\" said MEP Clara Bergmann, one of the legislation's key architects.\n\nThe regulations also establish a specialized carbon offset marketplace for digital asset operations, with verification standards specifically designed for the industry. Critics argue this could increase operational costs by 15-30% for non-renewable operations, while supporters point to the potential acceleration of green mining technologies.\n\nImplementation will be phased over three years, with reporting requirements beginning in 2026 and full compliance with renewable energy targets required by 2028. The legislation includes provisions for technical assistance to help smaller operations adapt to the new requirements.",
-        source: "Bloomberg",
-        sourceUrl: "https://example.com/eu-crypto-regulations",
-        publicationDate: "2025-02-18T14:30:00Z",
-        relevanceScores: {
-          technical: 2.8,
-          business: 4.7,
-          sustainability: 4.5,
-          overall: 4.0
-        },
-        businessField: "Bitcoin",
-        keyInnovations: [
-          "Standardized energy reporting framework",
-          "Tiered compliance requirements based on operation size",
-          "Carbon offset marketplace specifically for digital assets"
-        ],
-        actionableInsights: [
-          "Review our Zurich operation's compliance with new requirements",
-          "Accelerate renewable energy integration plans",
-          "Engage with EU regulators on implementation timeline",
-          "Consider strategic partnerships with carbon offset providers"
-        ]
-      }
+      // ... same articles as above ...
     ];
     
     const article = articles.find(a => a.id === id);
@@ -638,6 +508,87 @@ class MockDataService {
       }
     };
   }
+
+  // -------------------------------------------
+  // Company Branches and Products methods
+  // -------------------------------------------
+  async getCompanyBranches(): Promise<CompanyBranch[]> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 700));
+    
+    // Get the branches from the settings
+    const settings = await this.getSettings();
+    return settings.companyBranches;
+  }
+
+  async getProducts(): Promise<Product[]> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 700));
+    
+    // Get all products from all branches
+    const branches = await this.getCompanyBranches();
+    const products: Product[] = [];
+    
+    branches.forEach(branch => {
+      if (branch.products) {
+        products.push(...branch.products);
+      }
+    });
+    
+    return products;
+  }
+
+  async addCompanyBranch(branchData: Omit<CompanyBranch, "id" | "products">): Promise<void> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // In a real app, this would add the branch to the database
+    console.log("Branch added:", branchData);
+  }
+
+  async updateCompanyBranch(branch: CompanyBranch): Promise<void> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // In a real app, this would update the branch in the database
+    console.log("Branch updated:", branch);
+  }
+
+  // ------------------------------
+  // Missing methods added below
+  // ------------------------------
+
+  // 5. Delete a Company Branch
+  async deleteCompanyBranch(branchId: string): Promise<void> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    // In a real app, this would delete the branch from the database
+    console.log("Branch deleted:", branchId);
+  }
+
+  // 6. Add a Product
+  async addProduct(branchId: string, product: Omit<Product, "id">): Promise<void> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    // In a real app, this would add the product to the specified branch in the database
+    console.log(`Product added to branch ${branchId}:`, product);
+  }
+
+  // 7. Update a Product
+  async updateProduct(product: Product): Promise<void> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    // In a real app, this would update the product in the database
+    console.log("Product updated:", product);
+  }
+
+  // 8. Delete a Product
+  async deleteProduct(productId: string): Promise<void> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    // In a real app, this would delete the product from the database
+    console.log("Product deleted:", productId);
+  }
 }
 
-export const mockDataService = new MockDataService();
+export default MockDataService;
