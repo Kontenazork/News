@@ -1,37 +1,105 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { Settings } from "@/types";
+import { Settings, CompanyBranch, BusinessField, Product } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Save, X, Plus } from "lucide-react";
+import { Loader2, Save, X, Plus, Edit, Trash2, Building2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { 
   Card, 
   CardContent, 
   CardDescription, 
   CardHeader, 
-  CardTitle 
+  CardTitle,
+  CardFooter
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Badge
+} from "@/components/ui/badge";
 
 export default function TeamLeaderSettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [branches, setBranches] = useState<CompanyBranch[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
-  const fetchSettings = useCallback(async () => {
+  // New branch form state
+  const [newBranch, setNewBranch] = useState<Omit<CompanyBranch, "id" | "products">>({
+    name: "",
+    description: "",
+    location: "",
+    businessField: "HPC"
+  });
+
+  // New product form state
+  const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
+    name: "",
+    description: "",
+    branchId: ""
+  });
+
+  // Edit branch state
+  const [editingBranch, setEditingBranch] = useState<CompanyBranch | null>(null);
+
+  // Edit product state
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await mockDataService.getSettings();
-      setSettings(data);
+      const settingsData = await mockDataService.getSettings();
+      const branchesData = await mockDataService.getCompanyBranches();
+      const productsData = await mockDataService.getProducts();
+      setSettings(settingsData);
+      setBranches(branchesData);
+      setProducts(productsData);
     } catch (error) {
-      console.error("Error fetching settings:", error);
+      console.error("Error fetching data:", error);
       toast({
         title: "Error",
-        description: "Failed to load settings. Please try again.",
+        description: "Failed to load settings and branches. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -40,8 +108,8 @@ export default function TeamLeaderSettingsPage() {
   }, [toast]);
 
   useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+    fetchData();
+  }, [fetchData]);
 
   const handleBasePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (settings) {
@@ -71,6 +139,196 @@ export default function TeamLeaderSettingsPage() {
     }
   };
 
+  const handleAddBranch = async () => {
+    if (!newBranch.name || !newBranch.description || !newBranch.location) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await mockDataService.addCompanyBranch(newBranch);
+      await fetchData();
+      setNewBranch({
+        name: "",
+        description: "",
+        location: "",
+        businessField: "HPC"
+      });
+      toast({
+        title: "Success",
+        description: "Branch added successfully.",
+      });
+    } catch (error) {
+      console.error("Error adding branch:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add branch. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdateBranch = async () => {
+    if (!editingBranch) return;
+
+    setSaving(true);
+    try {
+      await mockDataService.updateCompanyBranch(editingBranch);
+      await fetchData();
+      setEditingBranch(null);
+      toast({
+        title: "Success",
+        description: "Branch updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error updating branch:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update branch. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteBranch = async (branchId: string) => {
+    // Check if branch has products
+    const branchProducts = products.filter(p => p.branchId === branchId);
+    if (branchProducts.length > 0) {
+      if (!confirm(`This branch has ${branchProducts.length} associated products. Deleting it will also delete all these products. Are you sure you want to continue?`)) {
+        return;
+      }
+    } else {
+      if (!confirm("Are you sure you want to delete this branch?")) {
+        return;
+      }
+    }
+
+    setSaving(true);
+    try {
+      await mockDataService.deleteCompanyBranch(branchId);
+      await fetchData();
+      toast({
+        title: "Success",
+        description: "Branch deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting branch:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete branch. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddProduct = async () => {
+    if (!newProduct.name || !newProduct.description || !newProduct.branchId) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await mockDataService.addProduct(newProduct);
+      await fetchData();
+      setNewProduct({
+        name: "",
+        description: "",
+        branchId: ""
+      });
+      toast({
+        title: "Success",
+        description: "Product added successfully.",
+      });
+    } catch (error) {
+      console.error("Error adding product:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add product. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    if (!editingProduct) return;
+
+    setSaving(true);
+    try {
+      await mockDataService.updateProduct(editingProduct);
+      await fetchData();
+      setEditingProduct(null);
+      toast({
+        title: "Success",
+        description: "Product updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update product. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await mockDataService.deleteProduct(productId);
+      await fetchData();
+      toast({
+        title: "Success",
+        description: "Product deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete product. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getBusinessFieldColor = (field: BusinessField) => {
+    switch (field) {
+      case "HPC":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+      case "Bitcoin":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
+      case "Energy Storage":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
+    }
+  };
+
   if (loading || !settings) {
     return (
       <div className="flex items-center justify-center h-[80vh]">
@@ -87,88 +345,472 @@ export default function TeamLeaderSettingsPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Team Leader Settings</h1>
         <p className="text-muted-foreground mt-1">
-          Configure the core base prompt and company context
+          Configure the core base prompt, company context, and branches
         </p>
       </div>
       
-      <div className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Base Prompt</CardTitle>
-            <CardDescription>
-              Define the core prompt used for news curation
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              value={settings.basePrompt}
-              onChange={handleBasePromptChange}
-              className="min-h-[200px]"
-              placeholder="Enter your base prompt for news curation..."
-            />
-            <p className="text-sm text-muted-foreground mt-2">
-              This prompt will be used as the foundation for all news curation. It should include the core objectives and focus areas.
-            </p>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="prompt">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="prompt">Base Prompt</TabsTrigger>
+          <TabsTrigger value="branches">Company Branches</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="prompt" className="space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Base Prompt</CardTitle>
+              <CardDescription>
+                Define the core prompt used for news curation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={settings.basePrompt}
+                onChange={handleBasePromptChange}
+                className="min-h-[200px]"
+                placeholder="Enter your base prompt for news curation..."
+              />
+              <p className="text-sm text-muted-foreground mt-2">
+                This prompt will be used as the foundation for all news curation. It should include the core objectives and focus areas.
+              </p>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button 
+                onClick={handleSaveSettings} 
+                disabled={saving}
+                className="flex items-center gap-2"
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Save Settings
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="branches" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Branch</CardTitle>
+              <CardDescription>
+                Create a new company branch
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="branch-name">Branch Name</Label>
+                  <Input
+                    id="branch-name"
+                    value={newBranch.name}
+                    onChange={(e) => setNewBranch({...newBranch, name: e.target.value})}
+                    placeholder="Enter branch name"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="branch-location">Location</Label>
+                  <Input
+                    id="branch-location"
+                    value={newBranch.location}
+                    onChange={(e) => setNewBranch({...newBranch, location: e.target.value})}
+                    placeholder="City, Country"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label htmlFor="branch-description">Description</Label>
+                  <Input
+                    id="branch-description"
+                    value={newBranch.description}
+                    onChange={(e) => setNewBranch({...newBranch, description: e.target.value})}
+                    placeholder="Brief description of the branch"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="branch-field">Business Field</Label>
+                  <Select
+                    value={newBranch.businessField}
+                    onValueChange={(value) => setNewBranch({...newBranch, businessField: value as BusinessField})}
+                  >
+                    <SelectTrigger id="branch-field" className="mt-1">
+                      <SelectValue placeholder="Select business field" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="HPC">HPC</SelectItem>
+                      <SelectItem value="Bitcoin">Bitcoin</SelectItem>
+                      <SelectItem value="Energy Storage">Energy Storage</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button 
+                onClick={handleAddBranch} 
+                disabled={saving}
+                className="flex items-center gap-2"
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                Add Branch
+              </Button>
+            </CardFooter>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Company Branches</CardTitle>
-            <CardDescription>
-              Configure company branches for news categorization
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {settings.companyBranches.map((branch) => (
-                <div key={branch.id} className="border rounded-md p-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Existing Branches</CardTitle>
+              <CardDescription>
+                View and manage company branches and their products
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {branches.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No branches found. Add your first branch above.</p>
+                ) : (
+                  <div className="border rounded-md overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Branch Name</TableHead>
+                          <TableHead>Business Field</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Products</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {branches.map((branch) => {
+                          const branchProducts = products.filter(p => p.branchId === branch.id);
+                          return (
+                            <TableRow key={branch.id}>
+                              <TableCell className="font-medium">{branch.name}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className={getBusinessFieldColor(branch.businessField)}>
+                                  {branch.businessField}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{branch.location}</TableCell>
+                              <TableCell>
+                                {branchProducts.length > 0 ? (
+                                  <Badge variant="secondary">{branchProducts.length} products</Badge>
+                                ) : (
+                                  <span className="text-muted-foreground text-sm">No products</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        className="flex items-center gap-2"
+                                        onClick={() => setEditingBranch({...branch})}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                        Edit
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                      <DialogHeader>
+                                        <DialogTitle>Edit Branch</DialogTitle>
+                                        <DialogDescription>
+                                          Update branch information
+                                        </DialogDescription>
+                                      </DialogHeader>
+                                      
+                                      {editingBranch && (
+                                        <div className="grid grid-cols-1 gap-4 py-4">
+                                          <div>
+                                            <Label htmlFor="edit-branch-name">Branch Name</Label>
+                                            <Input
+                                              id="edit-branch-name"
+                                              value={editingBranch.name}
+                                              onChange={(e) => setEditingBranch({...editingBranch, name: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="edit-branch-location">Location</Label>
+                                            <Input
+                                              id="edit-branch-location"
+                                              value={editingBranch.location}
+                                              onChange={(e) => setEditingBranch({...editingBranch, location: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="edit-branch-description">Description</Label>
+                                            <Input
+                                              id="edit-branch-description"
+                                              value={editingBranch.description}
+                                              onChange={(e) => setEditingBranch({...editingBranch, description: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="edit-branch-field">Business Field</Label>
+                                            <Select
+                                              value={editingBranch.businessField}
+                                              onValueChange={(value) => setEditingBranch({...editingBranch, businessField: value as BusinessField})}
+                                            >
+                                              <SelectTrigger id="edit-branch-field" className="mt-1">
+                                                <SelectValue placeholder="Select business field" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="HPC">HPC</SelectItem>
+                                                <SelectItem value="Bitcoin">Bitcoin</SelectItem>
+                                                <SelectItem value="Energy Storage">Energy Storage</SelectItem>
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                        </div>
+                                      )}
+                                      
+                                      <DialogFooter>
+                                        <DialogClose asChild>
+                                          <Button variant="outline">Cancel</Button>
+                                        </DialogClose>
+                                        <DialogClose asChild>
+                                          <Button 
+                                            onClick={handleUpdateBranch}
+                                            disabled={saving}
+                                          >
+                                            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                            Save Changes
+                                          </Button>
+                                        </DialogClose>
+                                      </DialogFooter>
+                                    </DialogContent>
+                                  </Dialog>
+                                  
+                                  <Button 
+                                    variant="destructive" 
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                    onClick={() => handleDeleteBranch(branch.id)}
+                                    disabled={saving}
+                                  >
+                                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                                    Delete
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Products Management</CardTitle>
+              <CardDescription>
+                Add and manage products for your branches
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="border rounded-md p-4">
+                  <h3 className="text-lg font-medium mb-4">Add New Product</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor={`branch-name-${branch.id}`}>Name</Label>
+                      <Label htmlFor="product-name">Product Name</Label>
                       <Input
-                        id={`branch-name-${branch.id}`}
-                        value={branch.name}
-                        disabled
+                        id="product-name"
+                        value={newProduct.name}
+                        onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                        placeholder="Enter product name"
+                        className="mt-1"
                       />
                     </div>
                     <div>
-                      <Label htmlFor={`branch-field-${branch.id}`}>Business Field</Label>
-                      <Input
-                        id={`branch-field-${branch.id}`}
-                        value={branch.businessField}
-                        disabled
-                      />
+                      <Label htmlFor="product-branch">Branch</Label>
+                      <Select
+                        value={newProduct.branchId}
+                        onValueChange={(value) => setNewProduct({...newProduct, branchId: value})}
+                      >
+                        <SelectTrigger id="product-branch" className="mt-1">
+                          <SelectValue placeholder="Select branch" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {branches.map((branch) => (
+                            <SelectItem key={branch.id} value={branch.id}>
+                              {branch.name} ({branch.businessField})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="md:col-span-2">
-                      <Label htmlFor={`branch-desc-${branch.id}`}>Description</Label>
+                      <Label htmlFor="product-description">Description</Label>
                       <Input
-                        id={`branch-desc-${branch.id}`}
-                        value={branch.description}
-                        disabled
+                        id="product-description"
+                        value={newProduct.description}
+                        onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                        placeholder="Brief description of the product"
+                        className="mt-1"
                       />
+                    </div>
+                    <div className="md:col-span-2 flex justify-end">
+                      <Button 
+                        onClick={handleAddProduct} 
+                        disabled={saving}
+                        className="flex items-center gap-2"
+                      >
+                        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                        Add Product
+                      </Button>
                     </div>
                   </div>
                 </div>
-              ))}
-              <p className="text-sm text-muted-foreground mt-2">
-                Note: Company branches are fixed and cannot be modified in this interface.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
-        <div className="flex justify-end">
-          <Button 
-            onClick={handleSaveSettings} 
-            disabled={saving}
-            className="flex items-center gap-2"
-          >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Save Settings
-          </Button>
-        </div>
-      </div>
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Existing Products</h3>
+                  {products.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-4">No products found. Add your first product above.</p>
+                  ) : (
+                    <div className="border rounded-md overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product Name</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Branch</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {products.map((product) => {
+                            const branch = branches.find(b => b.id === product.branchId);
+                            return (
+                              <TableRow key={product.id}>
+                                <TableCell className="font-medium">{product.name}</TableCell>
+                                <TableCell>{product.description}</TableCell>
+                                <TableCell>
+                                  {branch ? (
+                                    <div className="flex items-center gap-2">
+                                      <span>{branch.name}</span>
+                                      <Badge variant="outline" className={getBusinessFieldColor(branch.businessField)}>
+                                        {branch.businessField}
+                                      </Badge>
+                                    </div>
+                                  ) : (
+                                    <span className="text-muted-foreground">Unknown branch</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end gap-2">
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm"
+                                          className="flex items-center gap-2"
+                                          onClick={() => setEditingProduct({...product})}
+                                        >
+                                          <Edit className="h-4 w-4" />
+                                          Edit
+                                        </Button>
+                                      </DialogTrigger>
+                                      <DialogContent>
+                                        <DialogHeader>
+                                          <DialogTitle>Edit Product</DialogTitle>
+                                          <DialogDescription>
+                                            Update product information
+                                          </DialogDescription>
+                                        </DialogHeader>
+                                        
+                                        {editingProduct && (
+                                          <div className="grid grid-cols-1 gap-4 py-4">
+                                            <div>
+                                              <Label htmlFor="edit-product-name">Product Name</Label>
+                                              <Input
+                                                id="edit-product-name"
+                                                value={editingProduct.name}
+                                                onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                                                className="mt-1"
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label htmlFor="edit-product-branch">Branch</Label>
+                                              <Select
+                                                value={editingProduct.branchId}
+                                                onValueChange={(value) => setEditingProduct({...editingProduct, branchId: value})}
+                                              >
+                                                <SelectTrigger id="edit-product-branch" className="mt-1">
+                                                  <SelectValue placeholder="Select branch" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  {branches.map((branch) => (
+                                                    <SelectItem key={branch.id} value={branch.id}>
+                                                      {branch.name} ({branch.businessField})
+                                                    </SelectItem>
+                                                  ))}
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                            <div>
+                                              <Label htmlFor="edit-product-description">Description</Label>
+                                              <Input
+                                                id="edit-product-description"
+                                                value={editingProduct.description}
+                                                onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
+                                                className="mt-1"
+                                              />
+                                            </div>
+                                          </div>
+                                        )}
+                                        
+                                        <DialogFooter>
+                                          <DialogClose asChild>
+                                            <Button variant="outline">Cancel</Button>
+                                          </DialogClose>
+                                          <DialogClose asChild>
+                                            <Button 
+                                              onClick={handleUpdateProduct}
+                                              disabled={saving}
+                                            >
+                                              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                              Save Changes
+                                            </Button>
+                                          </DialogClose>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
+                                    
+                                    <Button 
+                                      variant="destructive" 
+                                      size="sm"
+                                      className="flex items-center gap-2"
+                                      onClick={() => handleDeleteProduct(product.id)}
+                                      disabled={saving}
+                                    >
+                                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                                      Delete
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
       
       {saving && (
         <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
