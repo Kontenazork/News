@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Calendar, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface NewsCardProps {
   article: Article;
@@ -62,10 +63,12 @@ export function NewsCard({ article }: NewsCardProps) {
       {article.imageUrl && (
         <div className="px-6 pt-2">
           <div className="aspect-video relative rounded-md overflow-hidden">
-            <img 
+            <Image 
               src={article.imageUrl} 
               alt={article.title} 
-              className="object-cover w-full h-full"
+              className="object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
         </div>

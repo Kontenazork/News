@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Article, BusinessField } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { NewsCard } from "@/components/news/NewsCard";
@@ -45,14 +45,6 @@ export default function NewsPage() {
   const [businessFieldFilter, setBusinessFieldFilter] = useState<BusinessField | "all">("all");
   const [sortBy, setSortBy] = useState<"date" | "relevance">("date");
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  useEffect(() => {
-    filterArticles();
-  }, [articles, searchQuery, businessFieldFilter, sortBy]);
-
   const fetchArticles = async () => {
     setLoading(true);
     try {
@@ -65,7 +57,7 @@ export default function NewsPage() {
     }
   };
 
-  const filterArticles = () => {
+  const filterArticles = useCallback(() => {
     let filtered = [...articles];
     
     // Apply business field filter
@@ -92,7 +84,15 @@ export default function NewsPage() {
     }
     
     setFilteredArticles(filtered);
-  };
+  }, [articles, searchQuery, businessFieldFilter, sortBy]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  useEffect(() => {
+    filterArticles();
+  }, [articles, searchQuery, businessFieldFilter, sortBy, filterArticles]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
