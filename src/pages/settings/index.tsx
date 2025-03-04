@@ -26,13 +26,13 @@ export default function SettingsIndexPage() {
       modules: [
         {
           title: "Team Leader Settings",
-          description: "Configure the core base prompt and company context",
+          description: "Configure the core base prompt, company context, and branches",
           icon: <Users className="h-8 w-8" />,
           href: "/settings/team-leader",
         },
         {
           title: "Assistant Settings",
-          description: "Configure content fetching and preliminary processing",
+          description: "Configure Perplexity integration and content fetching",
           icon: <Bot className="h-8 w-8" />,
           href: "/settings/assistant",
         },
@@ -45,25 +45,14 @@ export default function SettingsIndexPage() {
       ]
     },
     {
-      category: "Organization & Content",
+      category: "System & Integration",
       modules: [
-        {
-          title: "Company Branches",
-          description: "Manage company branches and their products",
-          icon: <Building2 className="h-8 w-8" />,
-          href: "/settings/branches",
-        },
         {
           title: "Database Settings",
           description: "Configure database schema and output format",
           icon: <Database className="h-8 w-8" />,
           href: "/settings/database",
         },
-      ]
-    },
-    {
-      category: "System & Integration",
-      modules: [
         {
           title: "API Settings",
           description: "Configure external API services and credentials",
@@ -72,7 +61,7 @@ export default function SettingsIndexPage() {
         },
         {
           title: "Service Status",
-          description: "Monitor the status of all connected services",
+          description: "Monitor services, token usage, and test the pipeline",
           icon: <Activity className="h-8 w-8" />,
           href: "/settings/status",
         },
