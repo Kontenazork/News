@@ -20,12 +20,20 @@ export interface Article {
 
 export type BusinessField = "HPC" | "Bitcoin" | "Energy Storage";
 
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  branchId: string;
+}
+
 export interface CompanyBranch {
   id: string;
   name: string;
   description: string;
   location: string;
   businessField: BusinessField;
+  products?: Product[];
 }
 
 export interface Settings {
@@ -58,4 +66,30 @@ export interface DashboardMetrics {
   averageRelevanceScore: number;
   articlesByBusinessField: Record<BusinessField, number>;
   recentArticles: Article[];
+}
+
+export interface DatabaseField {
+  id: string;
+  name: string;
+  type: "string" | "number" | "boolean" | "array" | "object" | "date";
+  isRequired: boolean;
+  description: string;
+}
+
+export interface DatabaseSchema {
+  fields: DatabaseField[];
+  outputFormat: "json" | "csv" | "xml";
+  formatOptions: {
+    prettyPrint: boolean;
+    includeNulls: boolean;
+  };
+}
+
+export interface ServiceStatus {
+  id: string;
+  name: string;
+  status: "operational" | "degraded" | "outage" | "maintenance";
+  lastChecked: string;
+  uptime: number; // percentage
+  responseTime: number; // in ms
 }

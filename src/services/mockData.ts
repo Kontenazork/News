@@ -1,5 +1,45 @@
 
-import { Article, CompanyBranch, Settings, DashboardMetrics, BusinessField } from "@/types";
+import { Article, CompanyBranch, Settings, DashboardMetrics, BusinessField, Product, ServiceStatus, DatabaseField, DatabaseSchema } from "@/types";
+
+// Mock products
+export const mockProducts: Product[] = [
+  {
+    id: "1",
+    name: "SuperCluster X1",
+    description: "High-performance computing cluster for scientific research",
+    branchId: "1"
+  },
+  {
+    id: "2",
+    name: "DataVault Pro",
+    description: "Secure storage solution for large datasets",
+    branchId: "1"
+  },
+  {
+    id: "3",
+    name: "MiningRig 5000",
+    description: "Energy-efficient Bitcoin mining hardware",
+    branchId: "2"
+  },
+  {
+    id: "4",
+    name: "CryptoSecure Wallet",
+    description: "Hardware wallet for cryptocurrency storage",
+    branchId: "2"
+  },
+  {
+    id: "5",
+    name: "FlowCell Battery",
+    description: "Grid-scale energy storage solution",
+    branchId: "3"
+  },
+  {
+    id: "6",
+    name: "SolarStore Home",
+    description: "Residential battery system for solar energy storage",
+    branchId: "3"
+  }
+];
 
 // Mock company branches
 export const mockCompanyBranches: CompanyBranch[] = [
@@ -9,6 +49,7 @@ export const mockCompanyBranches: CompanyBranch[] = [
     description: "High Performance Computing division focused on advanced computational solutions",
     location: "Helsinki, Finland",
     businessField: "HPC",
+    products: mockProducts.filter(product => product.branchId === "1")
   },
   {
     id: "2",
@@ -16,6 +57,7 @@ export const mockCompanyBranches: CompanyBranch[] = [
     description: "Bitcoin mining and blockchain technology research",
     location: "Oslo, Norway",
     businessField: "Bitcoin",
+    products: mockProducts.filter(product => product.branchId === "2")
   },
   {
     id: "3",
@@ -23,8 +65,149 @@ export const mockCompanyBranches: CompanyBranch[] = [
     description: "Sustainable energy storage solutions and research",
     location: "Stockholm, Sweden",
     businessField: "Energy Storage",
+    products: mockProducts.filter(product => product.branchId === "3")
   },
 ];
+
+// Mock service statuses
+export const mockServiceStatuses: ServiceStatus[] = [
+  {
+    id: "1",
+    name: "OpenAI API",
+    status: "operational",
+    lastChecked: new Date().toISOString(),
+    uptime: 99.98,
+    responseTime: 245
+  },
+  {
+    id: "2",
+    name: "Perplexity API",
+    status: "operational",
+    lastChecked: new Date().toISOString(),
+    uptime: 99.95,
+    responseTime: 312
+  },
+  {
+    id: "3",
+    name: "Reddit API",
+    status: "degraded",
+    lastChecked: new Date().toISOString(),
+    uptime: 97.8,
+    responseTime: 520
+  },
+  {
+    id: "4",
+    name: "Supabase Database",
+    status: "operational",
+    lastChecked: new Date().toISOString(),
+    uptime: 99.99,
+    responseTime: 87
+  },
+  {
+    id: "5",
+    name: "Content Curator Service",
+    status: "operational",
+    lastChecked: new Date().toISOString(),
+    uptime: 99.9,
+    responseTime: 156
+  },
+  {
+    id: "6",
+    name: "Content Editor Service",
+    status: "operational",
+    lastChecked: new Date().toISOString(),
+    uptime: 99.95,
+    responseTime: 134
+  }
+];
+
+// Mock database schema
+export const mockDatabaseSchema: DatabaseSchema = {
+  fields: [
+    {
+      id: "1",
+      name: "id",
+      type: "string",
+      isRequired: true,
+      description: "Unique identifier for the article"
+    },
+    {
+      id: "2",
+      name: "title",
+      type: "string",
+      isRequired: true,
+      description: "Article title"
+    },
+    {
+      id: "3",
+      name: "content",
+      type: "string",
+      isRequired: true,
+      description: "Article content"
+    },
+    {
+      id: "4",
+      name: "source",
+      type: "string",
+      isRequired: true,
+      description: "Source of the article"
+    },
+    {
+      id: "5",
+      name: "sourceUrl",
+      type: "string",
+      isRequired: true,
+      description: "URL of the article source"
+    },
+    {
+      id: "6",
+      name: "publicationDate",
+      type: "date",
+      isRequired: true,
+      description: "Publication date of the article"
+    },
+    {
+      id: "7",
+      name: "imageUrl",
+      type: "string",
+      isRequired: false,
+      description: "URL of the article image"
+    },
+    {
+      id: "8",
+      name: "relevanceScores",
+      type: "object",
+      isRequired: true,
+      description: "Relevance scores for the article"
+    },
+    {
+      id: "9",
+      name: "businessField",
+      type: "string",
+      isRequired: true,
+      description: "Business field the article belongs to"
+    },
+    {
+      id: "10",
+      name: "keyInnovations",
+      type: "array",
+      isRequired: true,
+      description: "Key innovations mentioned in the article"
+    },
+    {
+      id: "11",
+      name: "actionableInsights",
+      type: "array",
+      isRequired: true,
+      description: "Actionable insights derived from the article"
+    }
+  ],
+  outputFormat: "json",
+  formatOptions: {
+    prettyPrint: true,
+    includeNulls: false
+  }
+};
 
 // Mock articles
 export const mockArticles: Article[] = [
@@ -244,4 +427,84 @@ export const mockDataService = {
   getSettings: () => Promise.resolve(mockSettings),
   updateSettings: (settings: Settings) => Promise.resolve({ ...settings }),
   getDashboardMetrics: () => Promise.resolve(mockDashboardMetrics),
+  getCompanyBranches: () => Promise.resolve(mockCompanyBranches),
+  addCompanyBranch: (branch: Omit<CompanyBranch, "id" | "products">) => {
+    const newBranch: CompanyBranch = {
+      ...branch,
+      id: String(mockCompanyBranches.length + 1),
+      products: []
+    };
+    mockCompanyBranches.push(newBranch);
+    return Promise.resolve(newBranch);
+  },
+  updateCompanyBranch: (branch: CompanyBranch) => {
+    const index = mockCompanyBranches.findIndex(b => b.id === branch.id);
+    if (index !== -1) {
+      mockCompanyBranches[index] = branch;
+    }
+    return Promise.resolve(branch);
+  },
+  deleteCompanyBranch: (id: string) => {
+    const index = mockCompanyBranches.findIndex(b => b.id === id);
+    if (index !== -1) {
+      mockCompanyBranches.splice(index, 1);
+    }
+    return Promise.resolve();
+  },
+  getProducts: () => Promise.resolve(mockProducts),
+  getProductsByBranchId: (branchId: string) => Promise.resolve(mockProducts.filter(p => p.branchId === branchId)),
+  addProduct: (product: Omit<Product, "id">) => {
+    const newProduct: Product = {
+      ...product,
+      id: String(mockProducts.length + 1)
+    };
+    mockProducts.push(newProduct);
+    return Promise.resolve(newProduct);
+  },
+  updateProduct: (product: Product) => {
+    const index = mockProducts.findIndex(p => p.id === product.id);
+    if (index !== -1) {
+      mockProducts[index] = product;
+    }
+    return Promise.resolve(product);
+  },
+  deleteProduct: (id: string) => {
+    const index = mockProducts.findIndex(p => p.id === id);
+    if (index !== -1) {
+      mockProducts.splice(index, 1);
+    }
+    return Promise.resolve();
+  },
+  getServiceStatuses: () => Promise.resolve(mockServiceStatuses),
+  updateServiceStatus: (status: ServiceStatus) => {
+    const index = mockServiceStatuses.findIndex(s => s.id === status.id);
+    if (index !== -1) {
+      mockServiceStatuses[index] = status;
+    }
+    return Promise.resolve(status);
+  },
+  getDatabaseSchema: () => Promise.resolve(mockDatabaseSchema),
+  updateDatabaseSchema: (schema: DatabaseSchema) => Promise.resolve(schema),
+  addDatabaseField: (field: Omit<DatabaseField, "id">) => {
+    const newField: DatabaseField = {
+      ...field,
+      id: String(mockDatabaseSchema.fields.length + 1)
+    };
+    mockDatabaseSchema.fields.push(newField);
+    return Promise.resolve(newField);
+  },
+  updateDatabaseField: (field: DatabaseField) => {
+    const index = mockDatabaseSchema.fields.findIndex(f => f.id === field.id);
+    if (index !== -1) {
+      mockDatabaseSchema.fields[index] = field;
+    }
+    return Promise.resolve(field);
+  },
+  deleteDatabaseField: (id: string) => {
+    const index = mockDatabaseSchema.fields.findIndex(f => f.id === id);
+    if (index !== -1) {
+      mockDatabaseSchema.fields.splice(index, 1);
+    }
+    return Promise.resolve();
+  }
 };
