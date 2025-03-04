@@ -38,6 +38,7 @@ export interface CompanyBranch {
 
 export interface Settings {
   basePrompt: string;
+  editorPrompt?: string;
   perplexityPrompt?: string;
   perplexityAutoRetry?: boolean;
   perplexityStream?: boolean;
