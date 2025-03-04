@@ -9,8 +9,6 @@ import {
   Edit, 
   Key, 
   FileText, 
-  GitBranch, 
-  Building2, 
   Activity, 
   Database,
   Settings as SettingsIcon
@@ -22,7 +20,7 @@ export default function SettingsIndexPage() {
   // Group settings modules by category
   const settingsModules = [
     {
-      category: "Role-Based Settings",
+      category: "Agent Settings",
       modules: [
         {
           title: "Team Leader Settings",
@@ -66,17 +64,11 @@ export default function SettingsIndexPage() {
           href: "/settings/status",
         },
         {
-          title: "Logging",
-          description: "View system logs and operation history",
+          title: "Logging & Pipeline",
+          description: "View system logs and understand the news curation workflow",
           icon: <FileText className="h-8 w-8" />,
           href: "/settings/logging",
-        },
-        {
-          title: "Pipeline Explanation",
-          description: "Understand the news curation workflow",
-          icon: <GitBranch className="h-8 w-8" />,
-          href: "/settings/pipeline",
-        },
+        }
       ]
     }
   ];
