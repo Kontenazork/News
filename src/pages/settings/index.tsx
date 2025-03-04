@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Bot, Edit, Key, FileText, GitBranch } from "lucide-react";
+import { Users, Bot, Edit, Key, FileText, GitBranch, Building2, Activity, Database } from "lucide-react";
 
 export default function SettingsIndexPage() {
   const router = useRouter();
@@ -37,6 +37,24 @@ export default function SettingsIndexPage() {
       description: "Configure external API services and credentials",
       icon: <Key className="h-8 w-8" />,
       href: "/settings/api",
+    },
+    {
+      title: "Company Branches",
+      description: "Manage company branches and their products",
+      icon: <Building2 className="h-8 w-8" />,
+      href: "/settings/branches",
+    },
+    {
+      title: "Service Status",
+      description: "Monitor the status of all connected services",
+      icon: <Activity className="h-8 w-8" />,
+      href: "/settings/status",
+    },
+    {
+      title: "Database Settings",
+      description: "Configure database schema and output format",
+      icon: <Database className="h-8 w-8" />,
+      href: "/settings/database",
     },
     {
       title: "Logging",
