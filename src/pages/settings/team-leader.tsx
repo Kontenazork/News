@@ -331,40 +331,33 @@ export default function TeamLeaderSettingsPage() {
   };
 
   const handleVectorDatabaseSettingChange = (
-    field: string,
+    field: keyof Settings['vectorDatabase'] | 'searchParameters',
     value: any,
-    nestedField?: string
+    nestedField?: keyof Settings['vectorDatabase']['searchParameters']
   ) => {
     if (!settings) return;
 
     setSettings((prev) => {
       if (!prev) return prev;
 
-      const vectorDatabase = {
-        ...prev.vectorDatabase,
-        [field]: nestedField
-          ? {
-              ...(prev.vectorDatabase?.[field] as Record<string, any>),
-              [nestedField]: value,
+      if (field === 'searchParameters' && nestedField) {
+        return {
+          ...prev,
+          vectorDatabase: {
+            ...prev.vectorDatabase,
+            searchParameters: {
+              ...prev.vectorDatabase.searchParameters,
+              [nestedField]: value
             }
-          : value,
-      };
+          }
+        };
+      }
 
       return {
         ...prev,
         vectorDatabase: {
-          enabled: vectorDatabase.enabled ?? false,
-          provider: vectorDatabase.provider ?? 'pinecone',
-          apiKey: vectorDatabase.apiKey ?? '',
-          environment: vectorDatabase.environment,
-          indexName: vectorDatabase.indexName ?? 'articles',
-          dimension: vectorDatabase.dimension ?? 1536,
-          namespace: vectorDatabase.namespace,
-          searchParameters: {
-            topK: vectorDatabase.searchParameters?.topK ?? 5,
-            minScore: vectorDatabase.searchParameters?.minScore ?? 0.7,
-            includeMetadata: vectorDatabase.searchParameters?.includeMetadata ?? true
-          }
+          ...prev.vectorDatabase,
+          [field]: value
         }
       };
     });
