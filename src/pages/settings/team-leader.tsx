@@ -330,6 +330,46 @@ export default function TeamLeaderSettingsPage() {
     }
   };
 
+  const handleVectorDatabaseSettingChange = (
+    field: string,
+    value: any,
+    nestedField?: string
+  ) => {
+    if (!settings) return;
+
+    setSettings((prev) => {
+      if (!prev) return prev;
+
+      const vectorDatabase = {
+        ...prev.vectorDatabase,
+        [field]: nestedField
+          ? {
+              ...(prev.vectorDatabase?.[field] as Record<string, any>),
+              [nestedField]: value,
+            }
+          : value,
+      };
+
+      return {
+        ...prev,
+        vectorDatabase: {
+          enabled: vectorDatabase.enabled ?? false,
+          provider: vectorDatabase.provider ?? 'pinecone',
+          apiKey: vectorDatabase.apiKey ?? '',
+          environment: vectorDatabase.environment,
+          indexName: vectorDatabase.indexName ?? 'articles',
+          dimension: vectorDatabase.dimension ?? 1536,
+          namespace: vectorDatabase.namespace,
+          searchParameters: {
+            topK: vectorDatabase.searchParameters?.topK ?? 5,
+            minScore: vectorDatabase.searchParameters?.minScore ?? 0.7,
+            includeMetadata: vectorDatabase.searchParameters?.includeMetadata ?? true
+          }
+        }
+      };
+    });
+  };
+
   if (loading || !settings) {
     return (
       <div className="flex items-center justify-center h-[80vh]">
@@ -409,13 +449,7 @@ export default function TeamLeaderSettingsPage() {
                   <Switch
                     checked={settings?.vectorDatabase?.enabled || false}
                     onCheckedChange={(checked) => 
-                      setSettings(prev => ({
-                        ...prev,
-                        vectorDatabase: {
-                          ...prev.vectorDatabase,
-                          enabled: checked
-                        }
-                      }))
+                      handleVectorDatabaseSettingChange('enabled', checked)
                     }
                   />
                 </div>
@@ -428,13 +462,7 @@ export default function TeamLeaderSettingsPage() {
                         <Select
                           value={settings.vectorDatabase.provider}
                           onValueChange={(value) => 
-                            setSettings(prev => ({
-                              ...prev,
-                              vectorDatabase: {
-                                ...prev.vectorDatabase,
-                                provider: value as 'pinecone' | 'weaviate' | 'qdrant'
-                              }
-                            }))
+                            handleVectorDatabaseSettingChange('provider', value)
                           }
                         >
                           <SelectTrigger className="mt-1">
@@ -454,13 +482,7 @@ export default function TeamLeaderSettingsPage() {
                           type="number"
                           value={settings.vectorDatabase.dimension}
                           onChange={(e) => 
-                            setSettings(prev => ({
-                              ...prev,
-                              vectorDatabase: {
-                                ...prev.vectorDatabase,
-                                dimension: parseInt(e.target.value)
-                              }
-                            }))
+                            handleVectorDatabaseSettingChange('dimension', parseInt(e.target.value))
                           }
                           className="mt-1"
                         />
@@ -481,18 +503,9 @@ export default function TeamLeaderSettingsPage() {
                               min={1}
                               max={100}
                               step={1}
-                              value={[settings.vectorDatabase.searchParameters.topK]}
+                              value={[settings.vectorDatabase.searchParameters?.topK ?? 5]}
                               onValueChange={(value) => 
-                                setSettings(prev => ({
-                                  ...prev,
-                                  vectorDatabase: {
-                                    ...prev.vectorDatabase,
-                                    searchParameters: {
-                                      ...prev.vectorDatabase.searchParameters,
-                                      topK: value[0]
-                                    }
-                                  }
-                                }))
+                                handleVectorDatabaseSettingChange('searchParameters', value[0], 'topK')
                               }
                             />
                           </div>
@@ -508,16 +521,7 @@ export default function TeamLeaderSettingsPage() {
                               step={0.01}
                               value={[settings.vectorDatabase.searchParameters.minScore]}
                               onValueChange={(value) => 
-                                setSettings(prev => ({
-                                  ...prev,
-                                  vectorDatabase: {
-                                    ...prev.vectorDatabase,
-                                    searchParameters: {
-                                      ...prev.vectorDatabase.searchParameters,
-                                      minScore: value[0]
-                                    }
-                                  }
-                                }))
+                                handleVectorDatabaseSettingChange('searchParameters', value[0], 'minScore')
                               }
                             />
                           </div>
@@ -527,16 +531,7 @@ export default function TeamLeaderSettingsPage() {
                             <Switch
                               checked={settings.vectorDatabase.searchParameters.includeMetadata}
                               onCheckedChange={(checked) => 
-                                setSettings(prev => ({
-                                  ...prev,
-                                  vectorDatabase: {
-                                    ...prev.vectorDatabase,
-                                    searchParameters: {
-                                      ...prev.vectorDatabase.searchParameters,
-                                      includeMetadata: checked
-                                    }
-                                  }
-                                }))
+                                handleVectorDatabaseSettingChange('searchParameters', checked, 'includeMetadata')
                               }
                             />
                           </div>
