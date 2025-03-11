@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   LayoutDashboard, 
   Newspaper, 
@@ -17,9 +18,9 @@ import {
   Building2,
   Activity,
   Database
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -28,10 +29,15 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const handleStart = () => setLoading(true);
-    const handleComplete = () => setLoading(false);
+    const handleComplete = () => {
+      setLoading(false);
+      setIsOpen(false);
+    };
 
     router.events.on('routeChangeStart', handleStart);
     router.events.on('routeChangeComplete', handleComplete);
@@ -138,7 +144,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       </div>
 
       {/* Mobile Sidebar */}
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild className='md:hidden'>
           <Button variant='ghost' size='icon' className='fixed top-4 left-4 z-40'>
             <Menu className='h-6 w-6' />
@@ -149,7 +155,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           <div className='flex flex-col h-full bg-card'>
             <div className='flex items-center justify-between h-16 px-4 border-b border-border'>
               <h1 className='text-2xl font-bold text-primary'>ZORK News</h1>
-              <Button variant='ghost' size='icon' onClick={() => setOpen(false)}>
+              <Button variant='ghost' size='icon' onClick={() => setIsOpen(false)}>
                 <X className='h-5 w-5' />
                 <span className='sr-only'>Close menu</span>
               </Button>
@@ -170,7 +176,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                           ? 'bg-primary text-primary-foreground'
                           : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                       )}
-                      onClick={() => !item.children && setOpen(false)}
+                      onClick={() => !item.children && setIsOpen(false)}
                     >
                       <item.icon
                         className={cn(
@@ -194,7 +200,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                                 ? 'bg-secondary text-secondary-foreground'
                                 : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                             )}
-                            onClick={() => setOpen(false)}
+                            onClick={() => setIsOpen(false)}
                           >
                             <child.icon
                               className={cn(
