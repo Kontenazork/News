@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,130 +12,137 @@ import {
   Activity, 
   Database,
   Building2,
-  GitBranch
+  GitBranch,
+  Settings as SettingsIcon,
+  Loader2
 } from "lucide-react";
+import { Settings } from '@/types';
+import { mockDataService } from '@/services/mockData';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { APISettingsForm } from '@/components/settings/APISettingsForm';
+import { DatabaseSettingsForm } from '@/components/settings/DatabaseSettingsForm';
+import { EditorSettingsForm } from '@/components/settings/EditorSettingsForm';
+import { AssistantSettingsForm } from '@/components/settings/AssistantSettingsForm';
+import { TeamLeaderSettingsForm } from '@/components/settings/TeamLeaderSettingsForm';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function SettingsIndexPage() {
   const router = useRouter();
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const settingsModules = [
+  const fetchSettings = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await mockDataService.getSettings();
+      setSettings(data);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load settings. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  if (loading || !settings) {
+    return (
+      <div className='flex items-center justify-center h-[80vh]'>
+        <div className='text-center'>
+          <div className='animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4'></div>
+          <p className='text-muted-foreground'>Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const settingsSections = [
     {
-      category: 'Core Agent Configuration',
-      description: 'Configure the core AI agents and their behavior',
-      modules: [
-        {
-          title: 'Team Leader Settings',
-          description: 'Configure base prompt and vector search refinement',
-          icon: <Users className='h-8 w-8' />,
-          href: '/settings/team-leader',
-        },
-        {
-          title: 'Assistant Settings',
-          description: 'Configure Perplexity integration and content fetching',
-          icon: <Bot className='h-8 w-8' />,
-          href: '/settings/assistant',
-        },
-        {
-          title: 'Editor Settings',
-          description: 'Configure relevance scoring and content refinement',
-          icon: <Edit className='h-8 w-8' />,
-          href: '/settings/editor',
-        },
-      ]
+      id: 'team-leader',
+      title: 'Team Leader Settings',
+      description: 'Configure base prompt and vector search refinement',
+      icon: <Users className='h-5 w-5' />,
+      component: <TeamLeaderSettingsForm settings={settings} onUpdate={fetchSettings} />
     },
     {
-      category: 'Infrastructure & Monitoring',
-      description: 'Configure system infrastructure and monitor performance',
-      modules: [
-        {
-          title: 'Database Settings',
-          description: 'Configure vector database and output schema',
-          icon: <Database className='h-8 w-8' />,
-          href: '/settings/database',
-        },
-        {
-          title: 'API Connections',
-          description: 'Manage API keys and service credentials',
-          icon: <Key className='h-8 w-8' />,
-          href: '/settings/api',
-        },
-        {
-          title: 'System Status',
-          description: 'Monitor services and token usage',
-          icon: <Activity className='h-8 w-8' />,
-          href: '/settings/status',
-        },
-      ]
+      id: 'assistant',
+      title: 'Assistant Settings',
+      description: 'Configure Perplexity integration and content fetching',
+      icon: <Bot className='h-5 w-5' />,
+      component: <AssistantSettingsForm settings={settings} onUpdate={fetchSettings} />
     },
     {
-      category: 'Organization & Analysis',
-      description: 'Manage company structure and workflow',
-      modules: [
-        {
-          title: 'Company Branches',
-          description: 'Manage branches and their business fields',
-          icon: <Building2 className='h-8 w-8' />,
-          href: '/settings/branches',
-        },
-        {
-          title: 'System Logs',
-          description: 'View detailed system logs and events',
-          icon: <FileText className='h-8 w-8' />,
-          href: '/settings/logging',
-        },
-        {
-          title: 'Pipeline Overview',
-          description: 'Understand the news curation workflow',
-          icon: <GitBranch className='h-8 w-8' />,
-          href: '/settings/pipeline',
-        },
-      ]
+      id: 'editor',
+      title: 'Editor Settings',
+      description: 'Configure relevance scoring and content refinement',
+      icon: <Edit className='h-5 w-5' />,
+      component: <EditorSettingsForm settings={settings} onUpdate={fetchSettings} />
+    },
+    {
+      id: 'api',
+      title: 'API Settings',
+      description: 'Manage API keys and service credentials',
+      icon: <Key className='h-5 w-5' />,
+      component: <APISettingsForm settings={settings} onUpdate={fetchSettings} />
+    },
+    {
+      id: 'database',
+      title: 'Database Settings',
+      description: 'Configure vector database and output schema',
+      icon: <Database className='h-5 w-5' />,
+      component: <DatabaseSettingsForm settings={settings} onUpdate={fetchSettings} />
     }
   ];
 
   return (
-    <div className='container max-w-6xl'>
-      <div className='mb-8'>
-        <h1 className='text-2xl font-bold'>Settings</h1>
-        <p className='text-muted-foreground mt-1'>
-          Configure and monitor the news curation system
-        </p>
+    <div className='container max-w-4xl py-6'>
+      <div className='flex items-center gap-2 mb-8'>
+        <SettingsIcon className='h-8 w-8 text-primary' />
+        <div>
+          <h1 className='text-2xl font-bold'>Settings</h1>
+          <p className='text-muted-foreground'>
+            Configure and manage all system settings
+          </p>
+        </div>
       </div>
 
-      {settingsModules.map((category) => (
-        <div key={category.category} className='mb-12'>
-          <div className='mb-6'>
-            <h2 className='text-xl font-semibold border-b pb-2'>{category.category}</h2>
-            <p className='text-sm text-muted-foreground mt-2'>{category.description}</p>
-          </div>
-          
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {category.modules.map((module) => (
-              <Link href={module.href} key={module.title}>
-                <Card className='hover:shadow-md transition-shadow cursor-pointer h-full'>
-                  <CardHeader className='flex flex-row items-center gap-4 pb-2'>
-                    <div className='p-2 bg-primary/10 rounded-md text-primary'>
-                      {module.icon}
-                    </div>
-                    <div>
-                      <CardTitle className='text-lg'>{module.title}</CardTitle>
-                      <CardDescription className='text-sm'>{module.description}</CardDescription>
-                    </div>
-                  </CardHeader>
-                  <CardContent className='pt-4'>
-                    <Button 
-                      variant='outline' 
-                      className='w-full'
-                    >
-                      Configure
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      ))}
+      <Card className='p-6'>
+        <Accordion type='single' collapsible className='space-y-4'>
+          {settingsSections.map((section) => (
+            <AccordionItem key={section.id} value={section.id} className='border rounded-lg px-6'>
+              <AccordionTrigger className='hover:no-underline py-4'>
+                <div className='flex items-center gap-3'>
+                  <div className='p-2 bg-primary/10 rounded-md text-primary'>
+                    {section.icon}
+                  </div>
+                  <div className='text-left'>
+                    <h3 className='text-lg font-semibold'>{section.title}</h3>
+                    <p className='text-sm text-muted-foreground'>
+                      {section.description}
+                    </p>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className='pt-4 pb-6'>
+                {section.component}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Card>
     </div>
   );
 }
