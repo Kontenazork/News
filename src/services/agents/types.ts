@@ -1,4 +1,3 @@
-
 import { Article, BusinessField } from "@/types";
 
 export interface ResearchTask {
@@ -20,6 +19,12 @@ export interface ResearchLeaderConfig {
   businessFields: BusinessField[];
   keywords: string[];
   timeframe: number;
+  vectorEnabled?: boolean;
+  vectorConfig?: {
+    provider: 'pinecone' | 'weaviate' | 'qdrant';
+    dimension: number;
+    namespace?: string;
+  };
 }
 
 export interface ProjectPlannerConfig {
