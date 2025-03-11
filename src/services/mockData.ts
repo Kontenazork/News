@@ -1,3 +1,4 @@
+
 import { 
   Settings,
   CompanyBranch,
@@ -6,7 +7,8 @@ import {
   DatabaseSchema,
   Article,
   ServiceStatus,
-  BusinessField
+  BusinessField,
+  DashboardMetrics
 } from "@/types";
 
 class MockDataService {
@@ -41,6 +43,45 @@ class MockDataService {
         sortBy: "relevance",
         filterByBusinessField: "all"
       }
+    };
+  }
+
+  async getDashboardMetrics(): Promise<DashboardMetrics> {
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return {
+      totalArticles: 42,
+      averageRelevanceScore: 4.2,
+      articlesByBusinessField: {
+        HPC: 15,
+        Bitcoin: 12,
+        "Energy Storage": 15
+      },
+      recentArticles: [
+        {
+          id: "1",
+          title: "Latest Developments in HPC",
+          content: "Recent advancements in high-performance computing...",
+          source: "Tech Weekly",
+          sourceUrl: "https://example.com/article1",
+          publicationDate: new Date().toISOString(),
+          imageUrl: "https://example.com/image1.jpg",
+          relevanceScores: {
+            technical: 4.5,
+            business: 4.2,
+            sustainability: 3.8,
+            overall: 4.2
+          },
+          businessField: "HPC",
+          keyInnovations: [
+            "Innovation 1",
+            "Innovation 2"
+          ],
+          actionableInsights: [
+            "Insight 1",
+            "Insight 2"
+          ]
+        }
+      ]
     };
   }
 
