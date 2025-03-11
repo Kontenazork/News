@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "@/lib/utils";
@@ -27,8 +27,23 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   
+  useEffect(() => {
+    const handleStart = () => setLoading(true);
+    const handleComplete = () => setLoading(false);
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
+    };
+  }, [router]);
+
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'News', href: '/news', icon: Newspaper },
@@ -204,7 +219,16 @@ export function MainLayout({ children }: MainLayoutProps) {
       {/* Main Content */}
       <div className='flex flex-col flex-1'>
         <main className='flex-1 p-4 md:p-6 pt-16 md:pt-6'>
-          {children}
+          {loading ? (
+            <div className='flex items-center justify-center h-[80vh]'>
+              <div className='text-center'>
+                <div className='animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4'></div>
+                <p className='text-muted-foreground'>Loading...</p>
+              </div>
+            </div>
+          ) : (
+            children
+          )}
         </main>
       </div>
     </div>

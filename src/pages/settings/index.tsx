@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -110,26 +111,27 @@ export default function SettingsIndexPage() {
           
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {category.modules.map((module) => (
-              <Card key={module.title} className='hover:shadow-md transition-shadow'>
-                <CardHeader className='flex flex-row items-center gap-4 pb-2'>
-                  <div className='p-2 bg-primary/10 rounded-md text-primary'>
-                    {module.icon}
-                  </div>
-                  <div>
-                    <CardTitle className='text-lg'>{module.title}</CardTitle>
-                    <CardDescription className='text-sm'>{module.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className='pt-4'>
-                  <Button 
-                    variant='outline' 
-                    className='w-full'
-                    onClick={() => router.push(module.href)}
-                  >
-                    Configure
-                  </Button>
-                </CardContent>
-              </Card>
+              <Link href={module.href} key={module.title}>
+                <Card className='hover:shadow-md transition-shadow cursor-pointer h-full'>
+                  <CardHeader className='flex flex-row items-center gap-4 pb-2'>
+                    <div className='p-2 bg-primary/10 rounded-md text-primary'>
+                      {module.icon}
+                    </div>
+                    <div>
+                      <CardTitle className='text-lg'>{module.title}</CardTitle>
+                      <CardDescription className='text-sm'>{module.description}</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className='pt-4'>
+                    <Button 
+                      variant='outline' 
+                      className='w-full'
+                    >
+                      Configure
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
