@@ -85,6 +85,16 @@ export interface Settings {
       includeMetadata: boolean;
     };
   };
+  apiKeys?: {
+    openai: string;
+    perplexity: string;
+    reddit: string;
+  };
+  apiSettings?: {
+    useOpenAI: boolean;
+    usePerplexity: boolean;
+    useReddit: boolean;
+  };
 }
 
 export interface DashboardMetrics {
