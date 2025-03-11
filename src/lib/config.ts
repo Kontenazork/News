@@ -3,31 +3,31 @@ import { z } from "zod";
 
 const configSchema = z.object({
   perplexity: z.object({
-    apiKey: z.string().optional(),
-    endpoint: z.string().url().optional(),
-  }).optional(),
+    apiKey: z.string().default(""),
+    endpoint: z.string().url().optional().default(""),
+  }).default({}),
   openai: z.object({
-    apiKey: z.string().optional(),
-  }).optional(),
+    apiKey: z.string().default(""),
+  }).default({}),
   pinecone: z.object({
-    apiKey: z.string().optional(),
-    url: z.string().url().optional(),
-    namespace: z.string().optional(),
-    index: z.string().optional(),
-    environment: z.string().optional(),
-  }).optional(),
+    apiKey: z.string().default(""),
+    url: z.string().url().default(""),
+    namespace: z.string().default(""),
+    index: z.string().default(""),
+    environment: z.string().default(""),
+  }).default({}),
   supabase: z.object({
-    url: z.string().url().optional(),
-    anonKey: z.string().optional(),
-    serviceKey: z.string().optional(),
-  }).optional(),
+    url: z.string().url().default(""),
+    anonKey: z.string().default(""),
+    serviceKey: z.string().default(""),
+  }).default({}),
   setup: z.object({
-    secretKey: z.string().optional(),
-  }).optional(),
+    secretKey: z.string().default(""),
+  }).default({}),
   app: z.object({
-    useMockData: z.boolean().optional(),
-  }).optional(),
-}).partial();
+    useMockData: z.boolean().default(false),
+  }).default({ useMockData: false }),
+}).default({});
 
 export type Config = z.infer<typeof configSchema>;
 
@@ -38,7 +38,7 @@ const getConfig = (): Config => {
       endpoint: process.env.NEXT_PUBLIC_PERPLEXITY_ENDPOINT || "",
     },
     openai: {
-      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+      apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || "",
     },
     pinecone: {
       apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY || "",
@@ -60,12 +60,7 @@ const getConfig = (): Config => {
     },
   };
 
-  try {
-    return configSchema.parse(config);
-  } catch (error) {
-    console.error("Configuration validation failed:", error);
-    return config; // Return config even if validation fails
-  }
+  return configSchema.parse(config);
 };
 
 export const config = getConfig();

@@ -1,77 +1,91 @@
 
-import { config } from "./config";
+import { config } from './config';
+
+const mockChatResponse = () => {
+  return {
+    text: "This is a mock response from the chat API.",
+    sources: []
+  };
+};
 
 export const perplexityApi = {
   async chat(messages: { role: string; content: string }[]) {
-    if (config.app.useMockData) {
+    const useMockData = config.app?.useMockData ?? false;
+    
+    if (useMockData) {
       return mockChatResponse();
     }
 
-    const response = await fetch(config.perplexity.endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.perplexity.apiKey}`,
-      },
-      body: JSON.stringify({ messages }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Perplexity API request failed");
+    if (!config.perplexity?.apiKey) {
+      throw new Error('Perplexity API key not configured');
     }
 
-    return response.json();
-  },
+    try {
+      const response = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${config.perplexity.apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'mixtral-8x7b-instruct',
+          messages
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      return {
+        text: data.choices[0].message.content,
+        sources: data.choices[0].message.context || []
+      };
+    } catch (error) {
+      console.error('Error calling Perplexity API:', error);
+      throw error;
+    }
+  }
 };
 
-export const pineconeApi = {
-  async query(vector: number[], topK: number = 5) {
-    if (config.app.useMockData) {
-      return mockPineconeResponse();
+export const openaiApi = {
+  async chat(messages: { role: string; content: string }[]) {
+    const useMockData = config.app?.useMockData ?? false;
+    
+    if (useMockData) {
+      return mockChatResponse();
     }
 
-    const response = await fetch(`${config.pinecone.url}/query`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Api-Key": config.pinecone.apiKey,
-      },
-      body: JSON.stringify({
-        vector,
-        topK,
-        namespace: config.pinecone.namespace,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Pinecone API request failed");
+    if (!config.openai?.apiKey) {
+      throw new Error('OpenAI API key not configured');
     }
 
-    return response.json();
-  },
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${config.openai.apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      return {
+        text: data.choices[0].message.content,
+        sources: []
+      };
+    } catch (error) {
+      console.error('Error calling OpenAI API:', error);
+      throw error;
+    }
+  }
 };
-
-// Mock responses for development
-const mockChatResponse = () => ({
-  choices: [
-    {
-      message: {
-        role: "assistant",
-        content: "This is a mock response from the chat API.",
-      },
-    },
-  ],
-});
-
-const mockPineconeResponse = () => ({
-  matches: [
-    {
-      id: "mock-id-1",
-      score: 0.95,
-      metadata: {
-        title: "Mock Article 1",
-        content: "This is a mock article content.",
-      },
-    },
-  ],
-});
