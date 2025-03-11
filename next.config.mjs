@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -22,8 +23,7 @@ const nextConfig = {
     QDRANT_API_KEY: process.env.QDRANT_API_KEY,
   },
   experimental: {
-    optimizePackageImports: ['@/components/ui'],
-    optimizeFonts: true,
+    optimizePackageImports: ['@/components/ui']
   },
 };
 

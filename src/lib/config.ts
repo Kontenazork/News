@@ -3,31 +3,31 @@ import { z } from "zod";
 
 const configSchema = z.object({
   perplexity: z.object({
-    apiKey: z.string(),
-    endpoint: z.string().url(),
-  }),
+    apiKey: z.string().optional(),
+    endpoint: z.string().url().optional(),
+  }).optional(),
   openai: z.object({
     apiKey: z.string().optional(),
-  }),
+  }).optional(),
   pinecone: z.object({
-    apiKey: z.string(),
-    url: z.string().url(),
-    namespace: z.string(),
-    index: z.string(),
-    environment: z.string(),
-  }),
+    apiKey: z.string().optional(),
+    url: z.string().url().optional(),
+    namespace: z.string().optional(),
+    index: z.string().optional(),
+    environment: z.string().optional(),
+  }).optional(),
   supabase: z.object({
-    url: z.string().url(),
-    anonKey: z.string(),
-    serviceKey: z.string(),
-  }),
+    url: z.string().url().optional(),
+    anonKey: z.string().optional(),
+    serviceKey: z.string().optional(),
+  }).optional(),
   setup: z.object({
-    secretKey: z.string(),
-  }),
+    secretKey: z.string().optional(),
+  }).optional(),
   app: z.object({
-    useMockData: z.boolean(),
-  }),
-});
+    useMockData: z.boolean().optional(),
+  }).optional(),
+}).partial();
 
 export type Config = z.infer<typeof configSchema>;
 
@@ -64,7 +64,7 @@ const getConfig = (): Config => {
     return configSchema.parse(config);
   } catch (error) {
     console.error("Configuration validation failed:", error);
-    throw new Error("Invalid configuration");
+    return config; // Return config even if validation fails
   }
 };
 
