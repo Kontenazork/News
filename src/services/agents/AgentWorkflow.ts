@@ -15,7 +15,14 @@ export class AgentWorkflow {
   private settings: Required<Settings>;
 
   constructor(settings: Required<Settings>) {
+    if (!settings.perplexityPrompt || !settings.perplexityMaxTokens || 
+        !settings.perplexityTemperature || settings.perplexityAutoRetry === undefined || 
+        settings.perplexityStream === undefined) {
+      throw new Error('Perplexity settings are required for agent workflow');
+    }
+
     this.settings = settings;
+    
     this.researchLeader = new ResearchLeaderAgent({
       basePrompt: settings.basePrompt,
       businessFields: settings.companyBranches.map(b => b.businessField),
@@ -52,8 +59,30 @@ export class AgentWorkflow {
     });
   }
 
+  private async initializeVectorSearch(): Promise<void> {
+    if (!this.settings.vectorDatabase.enabled) return;
+
+    const provider = this.settings.vectorDatabase.provider;
+    const apiKey = this.settings.vectorDatabase.apiKey;
+    const environment = this.settings.vectorDatabase.environment;
+
+    if (!apiKey) {
+      throw new Error(`API key required for ${provider} vector database`);
+    }
+
+    if (provider === 'pinecone' && !environment) {
+      throw new Error('Environment required for Pinecone vector database');
+    }
+
+    // Initialize vector database connection here
+    // This would be implemented based on the chosen provider
+  }
+
   async executeWorkflow(): Promise<AgentResult> {
     try {
+      // Initialize vector search if enabled
+      await this.initializeVectorSearch();
+
       const scopeResult = await this.researchLeader.establishScope();
       if (!scopeResult.success) throw new Error(scopeResult.error);
       const tasks = scopeResult.data as ResearchTask[];
@@ -79,7 +108,6 @@ export class AgentWorkflow {
       const editorResult = await this.editor.compileReport(allArticles);
       if (!editorResult.success) throw new Error(editorResult.error);
 
-      // Add competitor analysis if enabled
       if (this.settings.competitorAnalysis.enabled) {
         const competitorAnalysisResult = await this.competitorAnalysis.analyzeArticles(allArticles);
         if (!competitorAnalysisResult.success) {
