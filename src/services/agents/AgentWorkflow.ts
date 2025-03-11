@@ -1,4 +1,3 @@
-
 import { ResearchLeaderAgent } from "./ResearchLeaderAgent";
 import { ProjectPlannerAgent } from "./ProjectPlannerAgent";
 import { ResearchAssistantAgent } from "./ResearchAssistantAgent";
@@ -12,7 +11,7 @@ export class AgentWorkflow {
   private researchAssistants: ResearchAssistantAgent[];
   private editor: EditorAgent;
 
-  constructor(settings: Settings) {
+  constructor(settings: Required<Settings>) {
     this.researchLeader = new ResearchLeaderAgent({
       basePrompt: settings.basePrompt,
       businessFields: settings.companyBranches.map(b => b.businessField),
@@ -22,10 +21,9 @@ export class AgentWorkflow {
 
     this.projectPlanner = new ProjectPlannerAgent({
       maxParallelTasks: 3,
-      taskPriority: "balanced"
+      taskPriority: 'balanced'
     });
 
-    // Create multiple research assistants for parallel processing
     this.researchAssistants = Array(3).fill(null).map(() => new ResearchAssistantAgent({
       perplexityPrompt: settings.perplexityPrompt,
       perplexityMaxTokens: settings.perplexityMaxTokens,
@@ -43,17 +41,14 @@ export class AgentWorkflow {
 
   async executeWorkflow(): Promise<AgentResult> {
     try {
-      // Step 1: Research Leader establishes scope
       const scopeResult = await this.researchLeader.establishScope();
       if (!scopeResult.success) throw new Error(scopeResult.error);
       const tasks = scopeResult.data as ResearchTask[];
 
-      // Step 2: Project Planner organizes tasks
       const planResult = await this.projectPlanner.planResearch(tasks);
       if (!planResult.success) throw new Error(planResult.error);
       const taskBatches = planResult.data as ResearchTask[][];
 
-      // Step 3: Research Assistants perform parallel research
       const allArticles: Article[] = [];
       for (const batch of taskBatches) {
         const researchPromises = batch.map((task, index) => 
@@ -68,7 +63,6 @@ export class AgentWorkflow {
         });
       }
 
-      // Step 4: Editor compiles and scores results
       const editorResult = await this.editor.compileReport(allArticles);
       if (!editorResult.success) throw new Error(editorResult.error);
 
@@ -79,7 +73,7 @@ export class AgentWorkflow {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error in workflow execution"
+        error: error instanceof Error ? error.message : 'Unknown error in workflow execution'
       };
     }
   }
