@@ -1,4 +1,3 @@
-
 export interface Article {
   id: string;
   title: string;
@@ -38,12 +37,12 @@ export interface CompanyBranch {
 
 export interface Settings {
   basePrompt: string;
-  editorPrompt?: string;
-  perplexityPrompt?: string;
-  perplexityAutoRetry?: boolean;
-  perplexityStream?: boolean;
-  perplexityMaxTokens?: number;
-  perplexityTemperature?: number;
+  editorPrompt: string;
+  perplexityPrompt: string;
+  perplexityAutoRetry: boolean;
+  perplexityStream: boolean;
+  perplexityMaxTokens: number;
+  perplexityTemperature: number;
   companyBranches: CompanyBranch[];
   keywords: string[];
   timeframe: number; // in days
