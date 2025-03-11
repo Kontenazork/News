@@ -43,7 +43,8 @@ export class ResearchLeaderAgent {
     try {
       // If vector search is enabled, refine keywords using semantic search
       const refinedKeywords = await this.performVectorSearch(field, baseKeywords);
-      return [...new Set([...baseKeywords, ...refinedKeywords])];
+      // Use Array.from to properly handle Set conversion
+      return Array.from(new Set([...baseKeywords, ...refinedKeywords]));
     } catch (error) {
       console.warn('Vector search failed, falling back to base keywords:', error);
       return baseKeywords;
@@ -51,6 +52,10 @@ export class ResearchLeaderAgent {
   }
 
   private async performVectorSearch(field: BusinessField, baseKeywords: string[]): Promise<string[]> {
+    if (!this.config.vectorConfig) {
+      return baseKeywords;
+    }
+
     // This would be implemented to use the configured vector database
     // For now, return base keywords
     return baseKeywords;
