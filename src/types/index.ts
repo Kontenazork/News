@@ -71,6 +71,20 @@ export interface Settings {
     minMentionsThreshold: number;
     autoGenerateReports: boolean;
   };
+  vectorDatabase: {
+    enabled: boolean;
+    provider: 'pinecone' | 'weaviate' | 'qdrant';
+    apiKey: string;
+    environment?: string;
+    indexName: string;
+    dimension: number;
+    namespace?: string;
+    searchParameters: {
+      topK: number;
+      minScore: number;
+      includeMetadata: boolean;
+    };
+  };
 }
 
 export interface DashboardMetrics {

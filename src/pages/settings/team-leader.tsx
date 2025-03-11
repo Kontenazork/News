@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { Settings, CompanyBranch, BusinessField, Product } from "@/types";
 import { mockDataService } from "@/services/mockData";
@@ -56,6 +55,8 @@ import {
 import {
   Badge
 } from "@/components/ui/badge";
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 
 export default function TeamLeaderSettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -350,8 +351,9 @@ export default function TeamLeaderSettingsPage() {
       </div>
       
       <Tabs defaultValue="prompt">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="prompt">Base Prompt</TabsTrigger>
+          <TabsTrigger value="vector">Vector Search</TabsTrigger>
           <TabsTrigger value="branches">Company Branches</TabsTrigger>
         </TabsList>
         
@@ -384,6 +386,178 @@ export default function TeamLeaderSettingsPage() {
                 Save Settings
               </Button>
             </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="vector" className="space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Vector Search Configuration</CardTitle>
+              <CardDescription>
+                Configure vector database integration for semantic search refinement
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Enable Vector Search</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Use semantic search to refine and improve search results
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings?.vectorDatabase?.enabled || false}
+                    onCheckedChange={(checked) => 
+                      setSettings(prev => ({
+                        ...prev,
+                        vectorDatabase: {
+                          ...prev.vectorDatabase,
+                          enabled: checked
+                        }
+                      }))
+                    }
+                  />
+                </div>
+
+                {settings?.vectorDatabase?.enabled && (
+                  <>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Vector Database Provider</Label>
+                        <Select
+                          value={settings.vectorDatabase.provider}
+                          onValueChange={(value) => 
+                            setSettings(prev => ({
+                              ...prev,
+                              vectorDatabase: {
+                                ...prev.vectorDatabase,
+                                provider: value as 'pinecone' | 'weaviate' | 'qdrant'
+                              }
+                            }))
+                          }
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select provider" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pinecone">Pinecone</SelectItem>
+                            <SelectItem value="weaviate">Weaviate</SelectItem>
+                            <SelectItem value="qdrant">Qdrant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label>Vector Dimension</Label>
+                        <Input
+                          type="number"
+                          value={settings.vectorDatabase.dimension}
+                          onChange={(e) => 
+                            setSettings(prev => ({
+                              ...prev,
+                              vectorDatabase: {
+                                ...prev.vectorDatabase,
+                                dimension: parseInt(e.target.value)
+                              }
+                            }))
+                          }
+                          className="mt-1"
+                        />
+                        <p className="text-sm text-muted-foreground mt-1">
+                          The dimension of the vectors used for semantic search
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label>Search Parameters</Label>
+                        <div className="space-y-4 mt-2">
+                          <div>
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm">Top K Results</span>
+                              <span className="text-sm font-medium">{settings.vectorDatabase.searchParameters.topK}</span>
+                            </div>
+                            <Slider
+                              min={1}
+                              max={100}
+                              step={1}
+                              value={[settings.vectorDatabase.searchParameters.topK]}
+                              onValueChange={(value) => 
+                                setSettings(prev => ({
+                                  ...prev,
+                                  vectorDatabase: {
+                                    ...prev.vectorDatabase,
+                                    searchParameters: {
+                                      ...prev.vectorDatabase.searchParameters,
+                                      topK: value[0]
+                                    }
+                                  }
+                                }))
+                              }
+                            />
+                          </div>
+
+                          <div>
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm">Minimum Score</span>
+                              <span className="text-sm font-medium">{settings.vectorDatabase.searchParameters.minScore}</span>
+                            </div>
+                            <Slider
+                              min={0}
+                              max={1}
+                              step={0.01}
+                              value={[settings.vectorDatabase.searchParameters.minScore]}
+                              onValueChange={(value) => 
+                                setSettings(prev => ({
+                                  ...prev,
+                                  vectorDatabase: {
+                                    ...prev.vectorDatabase,
+                                    searchParameters: {
+                                      ...prev.vectorDatabase.searchParameters,
+                                      minScore: value[0]
+                                    }
+                                  }
+                                }))
+                              }
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <Label>Include Metadata</Label>
+                            <Switch
+                              checked={settings.vectorDatabase.searchParameters.includeMetadata}
+                              onCheckedChange={(checked) => 
+                                setSettings(prev => ({
+                                  ...prev,
+                                  vectorDatabase: {
+                                    ...prev.vectorDatabase,
+                                    searchParameters: {
+                                      ...prev.vectorDatabase.searchParameters,
+                                      includeMetadata: checked
+                                    }
+                                  }
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button 
+                        onClick={handleSaveSettings} 
+                        disabled={saving}
+                        className="flex items-center gap-2"
+                      >
+                        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                        Save Vector Settings
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </CardContent>
           </Card>
         </TabsContent>
         
