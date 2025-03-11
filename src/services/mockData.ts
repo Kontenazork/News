@@ -48,6 +48,20 @@ class MockDataService {
         updateFrequency: 24,
         minMentionsThreshold: 3,
         autoGenerateReports: true
+      },
+      vectorDatabase: {
+        enabled: false,
+        provider: 'pinecone',
+        apiKey: '',
+        environment: '',
+        indexName: 'articles',
+        dimension: 1536,
+        namespace: 'news',
+        searchParameters: {
+          topK: 5,
+          minScore: 0.7,
+          includeMetadata: true
+        }
       }
     };
   }
