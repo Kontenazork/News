@@ -12,8 +12,10 @@ export class AgentWorkflow {
   private researchAssistants: ResearchAssistantAgent[];
   private editor: EditorAgent;
   private competitorAnalysis: CompetitorAnalysisAgent;
+  private settings: Required<Settings>;
 
   constructor(settings: Required<Settings>) {
+    this.settings = settings;
     this.researchLeader = new ResearchLeaderAgent({
       basePrompt: settings.basePrompt,
       businessFields: settings.companyBranches.map(b => b.businessField),
@@ -78,7 +80,7 @@ export class AgentWorkflow {
       if (!editorResult.success) throw new Error(editorResult.error);
 
       // Add competitor analysis if enabled
-      if (settings.competitorAnalysis.enabled) {
+      if (this.settings.competitorAnalysis.enabled) {
         const competitorAnalysisResult = await this.competitorAnalysis.analyzeArticles(allArticles);
         if (!competitorAnalysisResult.success) {
           console.warn('Competitor analysis failed:', competitorAnalysisResult.error);
