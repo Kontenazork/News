@@ -50,7 +50,7 @@
   ],
   "cleanUrls": true,
   "trailingSlash": false,
-  "regions": ["aid1"],
+  "regions": ["iad1"],
   "builds": [
     {
       "src": "package.json",
