@@ -2,6 +2,7 @@ import { ResearchLeaderAgent } from "./ResearchLeaderAgent";
 import { ProjectPlannerAgent } from "./ProjectPlannerAgent";
 import { ResearchAssistantAgent } from "./ResearchAssistantAgent";
 import { EditorAgent } from "./EditorAgent";
+import { CompetitorAnalysisAgent } from './CompetitorAnalysisAgent';
 import { Settings, Article } from "@/types";
 import { AgentResult, ResearchTask } from "./types";
 
@@ -10,6 +11,7 @@ export class AgentWorkflow {
   private projectPlanner: ProjectPlannerAgent;
   private researchAssistants: ResearchAssistantAgent[];
   private editor: EditorAgent;
+  private competitorAnalysis: CompetitorAnalysisAgent;
 
   constructor(settings: Required<Settings>) {
     this.researchLeader = new ResearchLeaderAgent({
@@ -36,6 +38,15 @@ export class AgentWorkflow {
       editorPrompt: settings.editorPrompt,
       relevanceWeights: settings.relevanceWeights,
       minimumScore: settings.minimumScore
+    });
+
+    this.competitorAnalysis = new CompetitorAnalysisAgent({
+      competitors: settings.competitorAnalysis.competitors,
+      minMentionsThreshold: settings.competitorAnalysis.minMentionsThreshold,
+      timeframe: {
+        start: new Date(Date.now() - settings.timeframe * 24 * 60 * 60 * 1000).toISOString(),
+        end: new Date().toISOString()
+      }
     });
   }
 
@@ -65,6 +76,16 @@ export class AgentWorkflow {
 
       const editorResult = await this.editor.compileReport(allArticles);
       if (!editorResult.success) throw new Error(editorResult.error);
+
+      // Add competitor analysis if enabled
+      if (settings.competitorAnalysis.enabled) {
+        const competitorAnalysisResult = await this.competitorAnalysis.analyzeArticles(allArticles);
+        if (!competitorAnalysisResult.success) {
+          console.warn('Competitor analysis failed:', competitorAnalysisResult.error);
+        } else {
+          editorResult.data.competitorAnalysis = competitorAnalysisResult.data;
+        }
+      }
 
       return {
         success: true,

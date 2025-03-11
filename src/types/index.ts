@@ -64,6 +64,13 @@ export interface Settings {
     sortBy: "date" | "relevance";
     filterByBusinessField: BusinessField | "all";
   };
+  competitorAnalysis: {
+    enabled: boolean;
+    competitors: string[];
+    updateFrequency: number; // hours
+    minMentionsThreshold: number;
+    autoGenerateReports: boolean;
+  };
 }
 
 export interface DashboardMetrics {
@@ -97,4 +104,45 @@ export interface ServiceStatus {
   lastChecked: string;
   uptime: number; // percentage
   responseTime: number; // in ms
+}
+
+export interface CompetitorMention {
+  id: string;
+  competitorName: string;
+  articleId: string;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  context: string;
+  productComparison?: {
+    competitorProduct: string;
+    ourProduct: string;
+    advantages: string[];
+    disadvantages: string[];
+  };
+  marketPosition: {
+    marketShare?: number;
+    pricePoint?: string;
+    targetMarket?: string;
+  };
+  timestamp: string;
+}
+
+export interface CompetitorAnalysisReport {
+  timeframe: {
+    start: string;
+    end: string;
+  };
+  competitors: {
+    name: string;
+    totalMentions: number;
+    averageSentiment: number;
+    productComparisons: Array<CompetitorMention['productComparison']>;
+    marketPosition: CompetitorMention['marketPosition'];
+    recentMentions: CompetitorMention[];
+  }[];
+  recommendations: string[];
+  trends: {
+    emerging: string[];
+    declining: string[];
+  };
+  timestamp: string;
 }
