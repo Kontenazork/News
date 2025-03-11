@@ -1,21 +1,5 @@
-
 {
   "framework": "nextjs",
-  "buildCommand": "next build",
-  "env": {
-    "NEXT_PUBLIC_OPENAI_API_KEY": "",
-    "NEXT_PUBLIC_PERPLEXITY_API_KEY": "",
-    "NEXT_PUBLIC_PINECONE_API_KEY": "",
-    "NEXT_PUBLIC_PINECONE_URL": "https://website-ifveaiv.svc.gcp-europe-west4-de1d.pinecone.io",
-    "NEXT_PUBLIC_PINECONE_NAMESPACE": "website",
-    "NEXT_PUBLIC_PINECONE_INDEX": "website",
-    "NEXT_PUBLIC_PINECONE_ENVIRONMENT": "gcp-europe-west4-de1d",
-    "NEXT_PUBLIC_SUPABASE_URL": "https://febckrmpahjmaxlcbdhy.supabase.co",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlYmNrcm1wYWhqbWF4bGNiZGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5MDAzNzYsImV4cCI6MjA1NjQ3NjM3Nn0.GIOjTtJf26imsJIl1t8y28KnUR4lXsRD9Z2kD5X2dqQ",
-    "SUPABASE_SERVICE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlYmNrcm1wYWhqbWF4bGNiZGh5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDkwMDM3NiwiZXhwIjoyMDU2NDc2Mzc2fQ.tKfNmO-bw6Fme96eg3oKq45BZ_5DFiMmAnAJEkCGKzY",
-    "SETUP_SECRET_KEY": "setup-secret-123",
-    "NEXT_PUBLIC_USE_MOCK_DATA": "true"
-  },
   "redirects": [
     {
       "source": "/old-path",
@@ -30,33 +14,10 @@
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.openai.com https://api.perplexity.ai https://*.supabase.co https://*.pinecone.io;"
         }
       ]
     }
   ],
   "cleanUrls": true,
-  "trailingSlash": false,
-  "regions": ["aid1"],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ]
+  "trailingSlash": false
 }
