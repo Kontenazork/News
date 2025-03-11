@@ -1,4 +1,3 @@
-
 import { 
   Settings,
   CompanyBranch,
@@ -42,6 +41,13 @@ class MockDataService {
       displayOptions: {
         sortBy: "relevance",
         filterByBusinessField: "all"
+      },
+      competitorAnalysis: {
+        enabled: true,
+        competitors: ["Competitor A", "Competitor B", "Competitor C"],
+        updateFrequency: 24,
+        minMentionsThreshold: 3,
+        autoGenerateReports: true
       }
     };
   }
