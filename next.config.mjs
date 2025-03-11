@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
+  poweredByHeader: false,
+  compress: true,
   images: {
     remotePatterns: [
       {
@@ -17,6 +20,10 @@ const nextConfig = {
     PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT,
     WEAVIATE_API_KEY: process.env.WEAVIATE_API_KEY,
     QDRANT_API_KEY: process.env.QDRANT_API_KEY,
+  },
+  experimental: {
+    optimizePackageImports: ['@/components/ui'],
+    optimizeFonts: true,
   },
 };
 
