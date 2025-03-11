@@ -9,6 +9,7 @@ import {
   BusinessField,
   DashboardMetrics
 } from "@/types";
+import { config } from '@/lib/config';
 
 class MockDataService {
   async getSettings(): Promise<Settings> {
@@ -67,6 +68,11 @@ class MockDataService {
   }
 
   async getDashboardMetrics(): Promise<DashboardMetrics> {
+    if (!config.app.useMockData) {
+      // In production, fetch real data
+      throw new Error('Real API implementation pending');
+    }
+    
     await new Promise(resolve => setTimeout(resolve, 600));
     return {
       totalArticles: 42,
