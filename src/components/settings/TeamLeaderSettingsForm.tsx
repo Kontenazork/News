@@ -1,6 +1,5 @@
-
 import { Settings } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { mockDataService } from '@/services/mockData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,8 +24,13 @@ interface TeamLeaderSettingsFormProps {
 
 export function TeamLeaderSettingsForm({ settings, onUpdate }: TeamLeaderSettingsFormProps) {
   const [saving, setSaving] = useState(false);
-  const [basePrompt, setBasePrompt] = useState(settings.basePrompt || "");
+  const [basePrompt, setBasePrompt] = useState(settings.basePrompt || '');
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
 
   const handleBasePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBasePrompt(e.target.value);
@@ -68,12 +72,12 @@ export function TeamLeaderSettingsForm({ settings, onUpdate }: TeamLeaderSetting
       };
       await mockDataService.updateSettings(updatedSettings);
       await onUpdate();
-      toast({
+      toastRef.current({
         title: "Success",
         description: "Team Leader settings saved successfully.",
       });
     } catch (error) {
-      toast({
+      toastRef.current({
         title: "Error",
         description: "Failed to save settings.",
         variant: "destructive",
