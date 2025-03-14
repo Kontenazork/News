@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FileText, Share2, Workflow, Zap } from "lucide-react";
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface MermaidConfig {
   initialize: (config: any) => void;
@@ -12,7 +12,7 @@ interface MermaidConfig {
 
 declare global {
   interface Window {
-    mermaid: MermaidConfig;
+    mermaid?: MermaidConfig;
   }
 }
 
@@ -75,47 +75,169 @@ const flowchartDefinitions = {
   `
 };
 
-const initMermaid = async () => {
-  if (typeof window !== "undefined") {
-    try {
-      const mermaid = (await import("mermaid")).default;
-      mermaid.initialize({
-        theme: "dark",
-        securityLevel: "loose",
-        flowchart: {
-          curve: "basis",
-          padding: 20
-        }
-      });
-      await mermaid.run();
-    } catch (error) {
-      console.error("Mermaid initialization error:", error);
-    }
-  }
-};
-
 export default function DocumentationPage() {
+  const initialized = useRef(false);
+
   useEffect(() => {
-    initMermaid();
+    if (!initialized.current && typeof window !== "undefined") {
+      initialized.current = true;
+      
+      const initMermaid = async () => {
+        try {
+          const mermaid = await import("mermaid");
+          await mermaid.default.initialize({
+            theme: "dark",
+            securityLevel: "loose",
+            flowchart: {
+              curve: "basis",
+              padding: 20
+            }
+          });
+          await mermaid.default.run();
+        } catch (error) {
+          console.error("Mermaid initialization error:", error);
+        }
+      };
+
+      initMermaid();
+    }
   }, []);
 
-  // Rest of the component remains the same...
-  // (Keeping just the critical changes for brevity)
   return (
-    <>
-      <Script 
-        src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
-        strategy="afterInteractive"
-        onLoad={() => {
-          window.mermaid?.initialize({
-            theme: "dark",
-            securityLevel: "loose"
-          });
-        }}
-      />
-      <div className="container max-w-4xl py-6">
-        {/* Rest of the JSX remains the same */}
+    <div className="container max-w-4xl py-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Documentation</h1>
+        <p className="text-muted-foreground mt-1">
+          System overview and technical documentation
+        </p>
       </div>
-    </>
+
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>System Workflow</CardTitle>
+            <CardDescription>
+              High-level overview of the system workflow
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mermaid bg-card p-4 rounded-lg overflow-auto">
+              {flowchartDefinitions.workflow}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>API Integration Flow</CardTitle>
+            <CardDescription>
+              How different APIs interact within the system
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mermaid bg-card p-4 rounded-lg overflow-auto">
+              {flowchartDefinitions.apiFlow}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>API Pricing Overview</CardTitle>
+            <CardDescription>
+              Cost breakdown for various API services
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mermaid bg-card p-4 rounded-lg overflow-auto">
+              {flowchartDefinitions.pricing}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Technical Documentation</CardTitle>
+            <CardDescription>
+              Detailed technical information and guides
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="setup">
+                <AccordionTrigger className="text-left">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Setup Guide
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <h3 className="font-medium">Environment Setup</h3>
+                  <ol className="list-decimal pl-5 space-y-2">
+                    <li>Configure API keys in settings</li>
+                    <li>Set up vector database connection</li>
+                    <li>Configure Perplexity integration</li>
+                    <li>Set up competitor tracking</li>
+                  </ol>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="api">
+                <AccordionTrigger className="text-left">
+                  <div className="flex items-center gap-2">
+                    <Share2 className="h-5 w-5" />
+                    API Documentation
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <h3 className="font-medium">Available Endpoints</h3>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li>GET /api/articles - Fetch curated articles</li>
+                    <li>POST /api/settings - Update system settings</li>
+                    <li>GET /api/metrics - Get dashboard metrics</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="workflow">
+                <AccordionTrigger className="text-left">
+                  <div className="flex items-center gap-2">
+                    <Workflow className="h-5 w-5" />
+                    Content Workflow
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <h3 className="font-medium">Content Processing Steps</h3>
+                  <ol className="list-decimal pl-5 space-y-2">
+                    <li>Source content discovery</li>
+                    <li>Relevance scoring</li>
+                    <li>Content refinement</li>
+                    <li>Final validation</li>
+                  </ol>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="optimization">
+                <AccordionTrigger className="text-left">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-5 w-5" />
+                    Optimization Guide
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-4">
+                  <h3 className="font-medium">Performance Tips</h3>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li>Adjust relevance weights</li>
+                    <li>Fine-tune vector search</li>
+                    <li>Optimize API usage</li>
+                    <li>Cache frequent requests</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
