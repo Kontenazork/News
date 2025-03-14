@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+
+import { useState, useEffect } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,44 +27,44 @@ import { TeamLeaderSettingsForm } from "@/components/settings/TeamLeaderSettings
 import { CompetitorAnalysisForm } from "@/components/settings/CompetitorAnalysisForm";
 import { useToast } from "@/components/ui/use-toast";
 
-const SettingsPage: React.FC = () => {
+export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const unmountedRef = useRef(false);
-  const toastRef = useRef(toast);
 
   useEffect(() => {
-    toastRef.current = toast;
-    return () => {
-      unmountedRef.current = true;
-    };
-  }, [toast]);
-
-  const fetchSettings = useCallback(async () => {
-    if (unmountedRef.current) return;
-    try {
-      const data = await mockDataService.getSettings();
-      if (!unmountedRef.current) {
+    const loadSettings = async () => {
+      try {
+        const data = await mockDataService.getSettings();
         setSettings(data);
+      } catch (error) {
+        console.error("Error loading settings:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load settings. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
         setLoading(false);
       }
-    } catch (error) {
-      if (!unmountedRef.current) {
-        toastRef.current({
-          title: 'Error',
-          description: 'Failed to load settings. Please try again.',
-          variant: 'destructive',
-        });
-      }
-    }
+    };
+
+    loadSettings();
   }, []);
 
-  const handleUpdate = useCallback(() => fetchSettings(), [fetchSettings]);
-
-  useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+  const handleUpdate = async () => {
+    try {
+      const data = await mockDataService.getSettings();
+      setSettings(data);
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update settings. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (loading || !settings) {
     return (
@@ -159,6 +160,4 @@ const SettingsPage: React.FC = () => {
       </Card>
     </div>
   );
-};
-
-export default SettingsPage;
+}
