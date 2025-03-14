@@ -46,6 +46,7 @@ const SettingsPage: React.FC = () => {
       const data = await mockDataService.getSettings();
       if (!unmountedRef.current) {
         setSettings(data);
+        setLoading(false);
       }
     } catch (error) {
       if (!unmountedRef.current) {
@@ -55,12 +56,8 @@ const SettingsPage: React.FC = () => {
           variant: 'destructive',
         });
       }
-    } finally {
-      if (!unmountedRef.current) {
-        setLoading(false);
-      }
     }
-  }, []); // Remove toast dependency
+  }, []);
 
   const handleUpdate = useCallback(() => fetchSettings(), [fetchSettings]);
 

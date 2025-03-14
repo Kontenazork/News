@@ -74,21 +74,29 @@ const flowchartDefinitions = {
 export default function DocumentationPage() {
   useEffect(() => {
     const initMermaid = async () => {
-      const { default: mermaid } = await import('mermaid');
-      mermaid.initialize({
-        theme: 'dark',
-        securityLevel: 'loose',
-        flowchart: {
-          curve: 'basis',
-          padding: 20
-        }
-      });
-      setTimeout(() => {
-        mermaid.run();
-      }, 200);
+      if (typeof window !== 'undefined') {
+        const mermaid = (await import('mermaid')).default;
+        mermaid.initialize({
+          theme: 'dark',
+          securityLevel: 'loose',
+          flowchart: {
+            curve: 'basis',
+            padding: 20
+          }
+        });
+        
+        // Wait for DOM to be ready
+        setTimeout(() => {
+          try {
+            mermaid.run();
+          } catch (error) {
+            console.error('Mermaid initialization error:', error);
+          }
+        }, 500);
+      }
     };
     
-    initMermaid().catch(console.error);
+    initMermaid();
   }, []);
 
   const docs = [
