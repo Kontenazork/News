@@ -1,6 +1,6 @@
+
 import { useRouter } from "next/router";
 import { useEffect, useCallback, useState } from "react";
-import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -31,8 +31,7 @@ import { AssistantSettingsForm } from '@/components/settings/AssistantSettingsFo
 import { TeamLeaderSettingsForm } from '@/components/settings/TeamLeaderSettingsForm';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function SettingsIndexPage() {
-  const router = useRouter();
+export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
