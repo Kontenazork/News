@@ -6,6 +6,12 @@ import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
 import Script from 'next/script';
 
+declare global {
+  interface Window {
+    mermaid: any;
+  }
+}
+
 const flowchartDefinitions = {
   workflow: `
     graph TB
@@ -68,7 +74,7 @@ const flowchartDefinitions = {
 export default function DocumentationPage() {
   useEffect(() => {
     const initMermaid = async () => {
-      const mermaid = (await import('mermaid')).default;
+      const { default: mermaid } = await import('mermaid');
       mermaid.initialize({
         theme: 'dark',
         securityLevel: 'loose',
@@ -79,10 +85,10 @@ export default function DocumentationPage() {
       });
       setTimeout(() => {
         mermaid.run();
-      }, 100);
+      }, 200);
     };
     
-    initMermaid();
+    initMermaid().catch(console.error);
   }, []);
 
   const docs = [
