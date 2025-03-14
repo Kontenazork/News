@@ -83,15 +83,22 @@ const flowchartDefinitions = {
 
 export default function DocumentationPage() {
   useEffect(() => {
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      securityLevel: 'loose',
-      flowchart: {
-        curve: 'basis',
-        padding: 20
-      }
-    });
+    const initMermaid = async () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        securityLevel: 'loose',
+        flowchart: {
+          curve: 'basis',
+          padding: 20
+        }
+      });
+      
+      // Force re-render of mermaid diagrams
+      await mermaid.run();
+    };
+    
+    initMermaid();
   }, []);
 
   const docs = [

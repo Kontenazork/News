@@ -22,7 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function Dashboard() {
+const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -220,4 +220,6 @@ export default function Dashboard() {
       </Tabs>
     </div>
   );
-}
+};
+
+export default Dashboard;

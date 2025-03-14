@@ -26,7 +26,7 @@ import { TeamLeaderSettingsForm } from "@/components/settings/TeamLeaderSettings
 import { CompetitorAnalysisForm } from "@/components/settings/CompetitorAnalysisForm";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function SettingsPage() {
+const SettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -63,9 +63,7 @@ export default function SettingsPage() {
     }
   }, []); // Remove toast dependency
 
-  const handleUpdate = useCallback(() => {
-    return fetchSettings();
-  }, [fetchSettings]);
+  const handleUpdate = useCallback(() => fetchSettings(), [fetchSettings]);
 
   useEffect(() => {
     fetchSettings();
