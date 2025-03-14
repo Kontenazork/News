@@ -1,8 +1,84 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FileText, Share2, Workflow, Zap } from "lucide-react";
 import Image from "next/image";
+import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
+
+// Dynamically import mermaid to avoid SSR issues
+const Mermaid = dynamic(
+  () => import('mermaid').then(mod => {
+    mod.default.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      flowchart: {
+        curve: 'basis',
+        padding: 20
+      }
+    });
+    return mod.default;
+  }),
+  { ssr: false }
+);
+
+const flowchartDefinitions = {
+  workflow: `
+    graph TB
+      TeamLeader[Team Leader] --> BasePrompt[Set Base Prompt]
+      TeamLeader --> VectorSearch[Configure Vector Search]
+      TeamLeader --> Branches[Manage Branches]
+      
+      Assistant[Assistant] --> Keywords[Manage Keywords]
+      Assistant --> Sources[Configure Sources]
+      Assistant --> Search[Perplexity Search]
+      
+      Editor[Editor] --> Scoring[Relevance Scoring]
+      Editor --> Content[Content Refinement]
+      Editor --> Quality[Quality Assurance]
+      
+      BasePrompt --> Pipeline[Processing Pipeline]
+      Keywords --> Pipeline
+      Sources --> Pipeline
+      
+      Pipeline --> FinalOutput[Final Output]
+      Scoring --> FinalOutput
+      Quality --> FinalOutput
+  `,
+  apiFlow: `
+    graph TB
+      Input[User Input] --> OpenAI[OpenAI API]
+      Input --> Perplexity[Perplexity API]
+      Input --> Vector[Vector Database]
+      
+      OpenAI --> Processing[Content Processing]
+      Perplexity --> Search[News Search]
+      Vector --> Semantic[Semantic Search]
+      
+      Processing --> Integration[Integration Layer]
+      Search --> Integration
+      Semantic --> Integration
+      
+      Integration --> Output[Final Output]
+      
+      class OpenAI,Perplexity,Vector emphasis;
+  `,
+  pricing: `
+    graph TB
+      OpenAI[OpenAI Costs] --> Processing[$0.0005/1K tokens]
+      OpenAI --> Generation[$0.0015/1K tokens]
+      OpenAI --> Embedding[$0.0001/1K tokens]
+      
+      Perplexity[Perplexity Costs] --> Basic[$0.05/query]
+      Perplexity --> Advanced[$0.10/query]
+      Perplexity --> Streaming[$0.15/query]
+      
+      Vector[Vector DB Costs] --> Storage[Storage Volume]
+      Vector --> Queries[Query Frequency]
+      Vector --> Dimensions[Vector Dimensions]
+      
+      class OpenAI,Perplexity,Vector emphasis;
+  `
+};
 
 export default function DocumentationPage() {
   const docs = [
