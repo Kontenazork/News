@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -8,16 +9,7 @@ import {
   Newspaper, 
   Settings as SettingsIcon,
   Menu,
-  X,
-  Users,
-  Bot,
-  Edit,
-  Key,
-  FileText,
-  GitBranch,
-  Building2,
-  Activity,
-  Database
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -53,15 +45,8 @@ export function MainLayout({ children }: MainLayoutProps) {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'News', href: '/news', icon: Newspaper },
-    { 
-      name: 'Settings', 
-      href: '/settings', 
-      icon: SettingsIcon,
-    },
+    { name: 'Settings', href: '/settings', icon: SettingsIcon }
   ];
-
-  const isSettingsActive = router.pathname.startsWith('/settings');
-  const isSettingsChildActive = (href: string) => router.pathname === href;
 
   return (
     <div className='flex min-h-screen bg-background'>
@@ -73,60 +58,29 @@ export function MainLayout({ children }: MainLayoutProps) {
           </div>
           <div className='mt-5 flex-1 flex flex-col overflow-y-auto'>
             <nav className='flex-1 space-y-2 px-2'>
-              {navigation.map((item) => {
-                const isActive = item.href === '/settings' 
-                  ? isSettingsActive 
-                  : router.pathname === item.href;
-                
-                return (
-                  <div key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                      )}
-                    >
-                      <item.icon
-                        className={cn(
-                          'mr-3 h-5 w-5',
-                          isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
-                        )}
-                        aria-hidden='true'
-                      />
-                      {item.name}
-                    </Link>
-                    
-                    {item.children && isSettingsActive && (
-                      <div className='ml-6 mt-2 space-y-1'>
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.name}
-                            href={child.href}
-                            className={cn(
-                              'group flex items-center px-3 py-2 text-xs font-medium rounded-md transition-colors',
-                              isSettingsChildActive(child.href)
-                                ? 'bg-secondary text-secondary-foreground'
-                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                            )}
-                          >
-                            <child.icon
-                              className={cn(
-                                'mr-3 h-4 w-4',
-                                isSettingsChildActive(child.href) ? 'text-secondary-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
-                              )}
-                              aria-hidden='true'
-                            />
-                            {child.name}
-                          </Link>
-                        ))}
-                      </div>
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    router.pathname === item.href
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                >
+                  <item.icon
+                    className={cn(
+                      'mr-3 h-5 w-5',
+                      router.pathname === item.href 
+                        ? 'text-primary-foreground' 
+                        : 'text-muted-foreground group-hover:text-accent-foreground'
                     )}
-                  </div>
-                );
-              })}
+                    aria-hidden='true'
+                  />
+                  {item.name}
+                </Link>
+              ))}
             </nav>
           </div>
         </div>
@@ -150,62 +104,30 @@ export function MainLayout({ children }: MainLayoutProps) {
               </Button>
             </div>
             <nav className='flex-1 space-y-2 p-4 overflow-y-auto'>
-              {navigation.map((item) => {
-                const isActive = item.href === '/settings' 
-                  ? isSettingsActive 
-                  : router.pathname === item.href;
-                
-                return (
-                  <div key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                      )}
-                      onClick={() => !item.children && setIsOpen(false)}
-                    >
-                      <item.icon
-                        className={cn(
-                          'mr-3 h-5 w-5',
-                          isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
-                        )}
-                        aria-hidden='true'
-                      />
-                      {item.name}
-                    </Link>
-                    
-                    {item.children && isSettingsActive && (
-                      <div className='ml-6 mt-2 space-y-1'>
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.name}
-                            href={child.href}
-                            className={cn(
-                              'group flex items-center px-3 py-2 text-xs font-medium rounded-md transition-colors',
-                              isSettingsChildActive(child.href)
-                                ? 'bg-secondary text-secondary-foreground'
-                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                            )}
-                            onClick={() => setIsOpen(false)}
-                          >
-                            <child.icon
-                              className={cn(
-                                'mr-3 h-4 w-4',
-                                isSettingsChildActive(child.href) ? 'text-secondary-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
-                              )}
-                              aria-hidden='true'
-                            />
-                            {child.name}
-                          </Link>
-                        ))}
-                      </div>
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    router.pathname === item.href
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <item.icon
+                    className={cn(
+                      'mr-3 h-5 w-5',
+                      router.pathname === item.href 
+                        ? 'text-primary-foreground' 
+                        : 'text-muted-foreground group-hover:text-accent-foreground'
                     )}
-                  </div>
-                );
-              })}
+                    aria-hidden='true'
+                  />
+                  {item.name}
+                </Link>
+              ))}
             </nav>
           </div>
         </SheetContent>
