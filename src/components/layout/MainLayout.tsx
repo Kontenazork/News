@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,25 +12,22 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const routerEventsRef = useRef(router.events);
   
-  const handleRouteChange = useCallback(() => {
+  useEffect(() => {
     const start = () => setLoading(true);
     const end = () => setLoading(false);
     
-    router.events.on('routeChangeStart', start);
-    router.events.on('routeChangeComplete', end);
-    router.events.on('routeChangeError', end);
+    routerEventsRef.current.on('routeChangeStart', start);
+    routerEventsRef.current.on('routeChangeComplete', end);
+    routerEventsRef.current.on('routeChangeError', end);
     
     return () => {
-      router.events.off('routeChangeStart', start);
-      router.events.off('routeChangeComplete', end);
-      router.events.off('routeChangeError', end);
+      routerEventsRef.current.off('routeChangeStart', start);
+      routerEventsRef.current.off('routeChangeComplete', end);
+      routerEventsRef.current.off('routeChangeError', end);
     };
-  }, [router.events]);
-
-  useEffect(() => {
-    return handleRouteChange();
-  }, [handleRouteChange]);
+  }, []); // Remove all dependencies
 
   return (
     <div className="flex min-h-screen bg-background">

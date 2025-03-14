@@ -29,8 +29,7 @@ export default function Dashboard() {
   const [combinedReport, setCombinedReport] = useState<string | null>(null);
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
   const metricsRef = useRef<DashboardMetrics | null>(null);
-
-  const generateCombinedReport = useCallback((articles: Article[]) => {
+  const generateReportRef = useRef((articles: Article[]) => {
     if (!articles.length) return;
     
     const introduction = '## Industry News Summary\n\nThis week\'s curated news highlights significant developments across our key business fields. The following summary combines insights from multiple sources to provide a comprehensive overview of industry trends and innovations.';
@@ -59,7 +58,7 @@ export default function Dashboard() {
     
     setCombinedReport(introduction + sections.join('') + insights);
     setReportDate(new Date().toLocaleDateString());
-  }, []); // Remove dependencies to prevent recreation
+  });
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -69,14 +68,14 @@ export default function Dashboard() {
       metricsRef.current = data;
       
       if (data.recentArticles.length > 0) {
-        generateCombinedReport(data.recentArticles);
+        generateReportRef.current(data.recentArticles);
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
-  }, [generateCombinedReport]); // Only depend on generateCombinedReport
+  }, []); // Remove all dependencies
 
   useEffect(() => {
     fetchDashboardData();

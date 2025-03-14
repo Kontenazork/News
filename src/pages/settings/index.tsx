@@ -31,6 +31,10 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const toastRef = useRef(toast);
 
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
+
   const fetchSettings = useCallback(async () => {
     setLoading(true);
     try {
@@ -48,16 +52,12 @@ export default function SettingsPage() {
     }
   }, []); // Remove toast dependency
 
-  useEffect(() => {
-    toastRef.current = toast;
-  }, [toast]);
+  const handleUpdate = useCallback(() => {
+    return fetchSettings();
+  }, [fetchSettings]);
 
   useEffect(() => {
     fetchSettings();
-  }, [fetchSettings]);
-
-  const handleUpdate = useCallback(() => {
-    return fetchSettings();
   }, [fetchSettings]);
 
   if (loading || !settings) {
