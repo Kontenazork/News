@@ -7,6 +7,7 @@ import {
   LayoutDashboard, 
   Newspaper, 
   Settings as SettingsIcon,
+  FileText,
   Menu,
   X
 } from 'lucide-react';
@@ -44,7 +45,8 @@ export function MainLayout({ children }: MainLayoutProps) {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'News', href: '/news', icon: Newspaper },
-    { name: 'Settings', href: '/settings', icon: SettingsIcon } // Updated to only point to main settings page
+    { name: 'Settings', href: '/settings', icon: SettingsIcon },
+    { name: 'Documentation', href: '/documentation', icon: FileText }
   ];
 
   return (
