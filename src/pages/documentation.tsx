@@ -75,24 +75,21 @@ export default function DocumentationPage() {
   useEffect(() => {
     const initMermaid = async () => {
       if (typeof window !== 'undefined') {
-        const mermaid = (await import('mermaid')).default;
-        mermaid.initialize({
-          theme: 'dark',
-          securityLevel: 'loose',
-          flowchart: {
-            curve: 'basis',
-            padding: 20
-          }
-        });
-        
-        // Wait for DOM to be ready
-        setTimeout(() => {
-          try {
-            mermaid.run();
-          } catch (error) {
-            console.error('Mermaid initialization error:', error);
-          }
-        }, 500);
+        try {
+          const mermaid = (await import('mermaid')).default;
+          mermaid.initialize({
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: {
+              curve: 'basis',
+              padding: 20
+            }
+          });
+          
+          await mermaid.run();
+        } catch (error) {
+          console.error('Mermaid initialization error:', error);
+        }
       }
     };
     
