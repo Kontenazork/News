@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { DashboardMetrics, Article } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
@@ -29,16 +28,14 @@ export default function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [combinedReport, setCombinedReport] = useState<string | null>(null);
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
+  const metricsRef = useRef<DashboardMetrics | null>(null);
 
   const generateCombinedReport = useCallback((articles: Article[]) => {
-    // In a real implementation, this would call an API to have the editor generate a combined report
-    // For now, we'll create a mock combined report based on the articles
+    if (!articles.length) return;
     
-    const introduction = "## Industry News Summary\n\nThis week's curated news highlights significant developments across our key business fields. The following summary combines insights from multiple sources to provide a comprehensive overview of industry trends and innovations.";
+    const introduction = '## Industry News Summary\n\nThis week\'s curated news highlights significant developments across our key business fields. The following summary combines insights from multiple sources to provide a comprehensive overview of industry trends and innovations.';
     
     const businessFieldSections: Record<string, Article[]> = {};
-    
-    // Group articles by business field
     articles.forEach(article => {
       if (!businessFieldSections[article.businessField]) {
         businessFieldSections[article.businessField] = [];
@@ -46,55 +43,50 @@ export default function Dashboard() {
       businessFieldSections[article.businessField].push(article);
     });
     
-    // Generate sections for each business field
     const sections = Object.entries(businessFieldSections).map(([field, fieldArticles]) => {
       const fieldIntro = `\n\n### ${field} Developments\n\n`;
-      const fieldContent = fieldArticles.map(article => {
-        return `**${article.title}**: ${article.content.substring(0, 150)}... `;
-      }).join("\n\n");
-      
+      const fieldContent = fieldArticles.map(article => 
+        `**${article.title}**: ${article.content.substring(0, 150)}... `
+      ).join("\n\n");
       return fieldIntro + fieldContent;
     });
     
-    // Generate insights section
     const insights = "\n\n### Key Insights & Implications\n\n" + 
       articles.flatMap(article => article.actionableInsights)
         .slice(0, 5)
         .map(insight => `- ${insight}`)
         .join("\n");
     
-    // Combine all sections
-    const report = introduction + sections.join("") + insights;
-    
-    setCombinedReport(report);
+    setCombinedReport(introduction + sections.join('') + insights);
     setReportDate(new Date().toLocaleDateString());
-  }, []);
+  }, []); // Remove dependencies to prevent recreation
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       const data = await mockDataService.getDashboardMetrics();
       setMetrics(data);
+      metricsRef.current = data;
       
-      // Generate combined report from recent articles
       if (data.recentArticles.length > 0) {
         generateCombinedReport(data.recentArticles);
       }
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+      console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
-  }, [generateCombinedReport]);
+  }, [generateCombinedReport]); // Only depend on generateCombinedReport
 
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
   const handleRefresh = async () => {
+    if (refreshing) return;
     setRefreshing(true);
     await fetchDashboardData();
-    setTimeout(() => setRefreshing(false), 1000); // Simulate refresh delay
+    setTimeout(() => setRefreshing(false), 1000);
   };
 
   if (loading || !metrics) {
