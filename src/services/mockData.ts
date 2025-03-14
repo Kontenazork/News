@@ -12,18 +12,23 @@ import {
 import { config } from '@/lib/config';
 
 class MockDataService {
-  async getSettings(): Promise<Settings> {
-    await new Promise(resolve => setTimeout(resolve, 600));
-    return {
-      basePrompt: "Find the latest news and developments in...",
-      editorPrompt: "Analyze and score articles based on...",
-      perplexityPrompt: "Search for recent developments in...",
+  private mockData: {
+    settings: Settings;
+    branches: CompanyBranch[];
+    products: Product[];
+    schema: DatabaseSchema;
+    articles: Article[];
+  } = {
+    settings: {
+      basePrompt: 'Find the latest news and developments in...',
+      editorPrompt: 'Analyze and score articles based on...',
+      perplexityPrompt: 'Search for recent developments in...',
       perplexityAutoRetry: true,
       perplexityStream: true,
       perplexityMaxTokens: 1000,
       perplexityTemperature: 0.7,
       companyBranches: [],
-      keywords: ["quantum computing", "ASIC", "GPU"],
+      keywords: ['quantum computing', 'ASIC', 'GPU'],
       timeframe: 7,
       sources: {
         websites: true,
@@ -40,12 +45,12 @@ class MockDataService {
       priorityKeywords: [],
       exclusionKeywords: [],
       displayOptions: {
-        sortBy: "relevance",
-        filterByBusinessField: "all"
+        sortBy: 'relevance',
+        filterByBusinessField: 'all'
       },
       competitorAnalysis: {
         enabled: true,
-        competitors: ["Competitor A", "Competitor B", "Competitor C"],
+        competitors: ['Competitor A', 'Competitor B', 'Competitor C'],
         updateFrequency: 24,
         minMentionsThreshold: 3,
         autoGenerateReports: true
@@ -64,7 +69,28 @@ class MockDataService {
           includeMetadata: true
         }
       }
-    };
+    },
+    branches: [],
+    products: [],
+    schema: {
+      fields: [],
+      outputFormat: 'json',
+      formatOptions: {
+        prettyPrint: true,
+        includeNulls: false
+      }
+    },
+    articles: []
+  };
+
+  async getSettings(): Promise<Settings> {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return this.mockData.settings;
+  }
+
+  async updateSettings(settings: Settings): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    this.mockData.settings = settings;
   }
 
   async getDashboardMetrics(): Promise<DashboardMetrics> {
@@ -111,61 +137,61 @@ class MockDataService {
     };
   }
 
-  async updateSettings(settings: Settings): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    console.log("Settings updated:", settings);
-  }
-
   async getCompanyBranches(): Promise<CompanyBranch[]> {
     await new Promise(resolve => setTimeout(resolve, 700));
-    return [];
+    return this.mockData.branches;
   }
 
   async getProducts(): Promise<Product[]> {
     await new Promise(resolve => setTimeout(resolve, 700));
-    return [];
+    return this.mockData.products;
   }
 
   async addCompanyBranch(branch: Omit<CompanyBranch, "id" | "products">): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
+    this.mockData.branches.push({ ...branch, id: String(this.mockData.branches.length + 1), products: [] });
     console.log("Branch added:", branch);
   }
 
   async updateCompanyBranch(branch: CompanyBranch): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
-    console.log("Branch updated:", branch);
+    const index = this.mockData.branches.findIndex(b => b.id === branch.id);
+    if (index !== -1) {
+      this.mockData.branches[index] = branch;
+      console.log("Branch updated:", branch);
+    }
   }
 
   async deleteCompanyBranch(branchId: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
+    this.mockData.branches = this.mockData.branches.filter(b => b.id !== branchId);
     console.log("Branch deleted:", branchId);
   }
 
   async addProduct(product: Omit<Product, "id">): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
+    this.mockData.products.push({ ...product, id: String(this.mockData.products.length + 1) });
     console.log("Product added:", product);
   }
 
   async updateProduct(product: Product): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
-    console.log("Product updated:", product);
+    const index = this.mockData.products.findIndex(p => p.id === product.id);
+    if (index !== -1) {
+      this.mockData.products[index] = product;
+      console.log("Product updated:", product);
+    }
   }
 
   async deleteProduct(productId: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
+    this.mockData.products = this.mockData.products.filter(p => p.id !== productId);
     console.log("Product deleted:", productId);
   }
 
   async getDatabaseSchema(): Promise<DatabaseSchema> {
     await new Promise(resolve => setTimeout(resolve, 600));
-    return {
-      fields: [],
-      outputFormat: "json",
-      formatOptions: {
-        prettyPrint: true,
-        includeNulls: false
-      }
-    };
+    return this.mockData.schema;
   }
 
   async addDatabaseField(field: Omit<DatabaseField, "id">): Promise<void> {
@@ -185,6 +211,7 @@ class MockDataService {
 
   async updateDatabaseSchema(schema: DatabaseSchema): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 800));
+    this.mockData.schema = schema;
     console.log("Database schema updated:", schema);
   }
 
@@ -195,7 +222,7 @@ class MockDataService {
 
   async getArticles(): Promise<Article[]> {
     await new Promise(resolve => setTimeout(resolve, 800));
-    return [];
+    return this.mockData.articles;
   }
 
   async getArticleById(id: string): Promise<Article> {

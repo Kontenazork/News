@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
@@ -32,21 +31,17 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const toastRef = useRef(toast);
 
-  useEffect(() => {
-    toastRef.current = toast;
-  }, [toast]);
-
   const loadSettings = useCallback(async () => {
     try {
       const data = await mockDataService.getSettings();
       setSettings(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error loading settings:", error);
+      console.error('Error loading settings:', error);
       toastRef.current({
-        title: "Error",
-        description: "Failed to load settings. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load settings. Please try again.',
+        variant: 'destructive',
       });
     }
   }, []); // Remove toast from dependencies
@@ -57,17 +52,16 @@ export default function SettingsPage() {
 
   const handleUpdate = useCallback(async () => {
     try {
-      const data = await mockDataService.getSettings();
-      setSettings(data);
+      await loadSettings();
     } catch (error) {
-      console.error("Error updating settings:", error);
+      console.error('Error updating settings:', error);
       toastRef.current({
-        title: "Error",
-        description: "Failed to update settings. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to update settings. Please try again.',
+        variant: 'destructive',
       });
     }
-  }, []); // Remove toast from dependencies
+  }, [loadSettings]);
 
   if (loading || !settings) {
     return (
