@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,41 +30,41 @@ import { useToast } from "@/components/ui/use-toast";
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const toastRef = useRef(useToast());
 
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const data = await mockDataService.getSettings();
-        setSettings(data);
-      } catch (error) {
-        console.error("Error loading settings:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load settings. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSettings();
+  const loadSettings = useCallback(async () => {
+    try {
+      const data = await mockDataService.getSettings();
+      setSettings(data);
+    } catch (error) {
+      console.error("Error loading settings:", error);
+      toastRef.current({
+        title: "Error",
+        description: "Failed to load settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleUpdate = async () => {
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
+  const handleUpdate = useCallback(async () => {
     try {
       const data = await mockDataService.getSettings();
       setSettings(data);
     } catch (error) {
       console.error("Error updating settings:", error);
-      toast({
+      toastRef.current({
         title: "Error",
         description: "Failed to update settings. Please try again.",
         variant: "destructive",
       });
     }
-  };
+  }, []);
 
   if (loading || !settings) {
     return (
