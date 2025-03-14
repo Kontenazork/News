@@ -31,13 +31,14 @@ const SettingsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const unmountedRef = useRef(false);
-  const settingsRef = useRef<Settings | null>(null);
-  
+  const toastRef = useRef(toast);
+
   useEffect(() => {
+    toastRef.current = toast;
     return () => {
       unmountedRef.current = true;
     };
-  }, []);
+  }, [toast]);
 
   const fetchSettings = useCallback(async () => {
     if (unmountedRef.current) return;
@@ -45,12 +46,10 @@ const SettingsPage: React.FC = () => {
       const data = await mockDataService.getSettings();
       if (!unmountedRef.current) {
         setSettings(data);
-        settingsRef.current = data;
       }
     } catch (error) {
-      console.error('Error fetching settings:', error);
       if (!unmountedRef.current) {
-        toast({
+        toastRef.current({
           title: 'Error',
           description: 'Failed to load settings. Please try again.',
           variant: 'destructive',
