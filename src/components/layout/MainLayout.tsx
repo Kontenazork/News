@@ -57,17 +57,6 @@ export function MainLayout({ children }: MainLayoutProps) {
       name: 'Settings', 
       href: '/settings', 
       icon: SettingsIcon,
-      children: [
-        { name: 'Team Leader', href: '/settings/team-leader', icon: Users },
-        { name: 'Assistant', href: '/settings/assistant', icon: Bot },
-        { name: 'Editor', href: '/settings/editor', icon: Edit },
-        { name: 'API Settings', href: '/settings/api', icon: Key },
-        { name: 'Company Branches', href: '/settings/branches', icon: Building2 },
-        { name: 'Service Status', href: '/settings/status', icon: Activity },
-        { name: 'Database Settings', href: '/settings/database', icon: Database },
-        { name: 'Logging', href: '/settings/logging', icon: FileText },
-        { name: 'Pipeline', href: '/settings/pipeline', icon: GitBranch },
-      ]
     },
   ];
 
