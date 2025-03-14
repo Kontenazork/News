@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { DashboardMetrics, Article } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
@@ -22,14 +23,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const Dashboard: React.FC = () => {
+export function Dashboard() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [combinedReport, setCombinedReport] = useState<string | null>(null);
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
-  const metricsRef = useRef<DashboardMetrics | null>(null);
-  const generateReportRef = useRef((articles: Article[]) => {
+
+  const generateReport = useCallback((articles: Article[]) => {
     if (!articles.length) return;
     
     const introduction = '## Industry News Summary\n\nThis week\'s curated news highlights significant developments across our key business fields. The following summary combines insights from multiple sources to provide a comprehensive overview of industry trends and innovations.';
@@ -58,24 +59,22 @@ const Dashboard: React.FC = () => {
     
     setCombinedReport(introduction + sections.join('') + insights);
     setReportDate(new Date().toLocaleDateString());
-  });
+  }, []);
 
   const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
     try {
       const data = await mockDataService.getDashboardMetrics();
       setMetrics(data);
-      metricsRef.current = data;
       
       if (data.recentArticles.length > 0) {
-        generateReportRef.current(data.recentArticles);
+        generateReport(data.recentArticles);
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
-  }, []); // Remove all dependencies
+  }, [generateReport]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -85,7 +84,7 @@ const Dashboard: React.FC = () => {
     if (refreshing) return;
     setRefreshing(true);
     await fetchDashboardData();
-    setTimeout(() => setRefreshing(false), 1000);
+    setRefreshing(false);
   };
 
   if (loading || !metrics) {
@@ -178,13 +177,10 @@ const Dashboard: React.FC = () => {
                 <div className="prose prose-sm dark:prose-invert max-w-none">
                   {combinedReport.split("\n\n").map((paragraph, index) => {
                     if (paragraph.startsWith("## ")) {
-                      // Main heading
                       return <h2 key={index} className="text-xl font-bold mt-0 mb-4">{paragraph.replace("## ", "")}</h2>;
                     } else if (paragraph.startsWith("### ")) {
-                      // Subheading
                       return <h3 key={index} className="text-lg font-semibold mt-6 mb-3">{paragraph.replace("### ", "")}</h3>;
                     } else if (paragraph.startsWith("- ")) {
-                      // List item
                       return (
                         <ul key={index} className="list-disc pl-5 my-3">
                           {paragraph.split("\n").map((item, itemIndex) => (
@@ -193,7 +189,6 @@ const Dashboard: React.FC = () => {
                         </ul>
                       );
                     } else {
-                      // Regular paragraph
                       return (
                         <div key={index} className="mb-4" dangerouslySetInnerHTML={{ 
                           __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
@@ -220,7 +215,6 @@ const Dashboard: React.FC = () => {
       </Tabs>
     </div>
   );
-};
+}
 
-export { Dashboard };
 export default Dashboard;
