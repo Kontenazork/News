@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { DashboardMetrics, Article } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -29,6 +30,15 @@ export default function DashboardPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [combinedReport, setCombinedReport] = useState<string | null>(null);
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
+  const { toast } = useToast();
+
+  // Use refs to prevent unnecessary re-renders
+  const metricsRef = useRef<DashboardMetrics | null>(null);
+  const toastRef = useRef(toast);
+
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
 
   const generateReport = useCallback((articles: Article[]) => {
     if (!articles.length) return;
@@ -65,16 +75,22 @@ export default function DashboardPage() {
     try {
       const data = await mockDataService.getDashboardMetrics();
       setMetrics(data);
+      metricsRef.current = data;
       
       if (data.recentArticles.length > 0) {
         generateReport(data.recentArticles);
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      toastRef.current({
+        title: "Error",
+        description: "Failed to load dashboard data. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
-  }, [generateReport]);
+  }, []); // Empty dependency array since we use refs
 
   useEffect(() => {
     fetchDashboardData();
@@ -83,8 +99,22 @@ export default function DashboardPage() {
   const handleRefresh = async () => {
     if (refreshing) return;
     setRefreshing(true);
-    await fetchDashboardData();
-    setRefreshing(false);
+    try {
+      await fetchDashboardData();
+      toastRef.current({
+        title: "Success",
+        description: "Dashboard data refreshed successfully.",
+      });
+    } catch (error) {
+      console.error('Error refreshing dashboard:', error);
+      toastRef.current({
+        title: "Error",
+        description: "Failed to refresh dashboard data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   if (loading || !metrics) {
