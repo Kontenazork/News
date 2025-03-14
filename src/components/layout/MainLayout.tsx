@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -45,7 +44,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
     { name: 'News', href: '/news', icon: Newspaper },
-    { name: 'Settings', href: '/settings', icon: SettingsIcon }
+    { name: 'Settings', href: '/settings', icon: SettingsIcon } // Updated to only point to main settings page
   ];
 
   return (
