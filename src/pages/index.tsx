@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DashboardMetrics, Article } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
@@ -32,18 +32,10 @@ export default function DashboardPage() {
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
   const { toast } = useToast();
 
-  // Use refs to prevent unnecessary re-renders
-  const metricsRef = useRef<DashboardMetrics | null>(null);
-  const toastRef = useRef(toast);
-
-  useEffect(() => {
-    toastRef.current = toast;
-  }, [toast]);
-
   const generateReport = useCallback((articles: Article[]) => {
     if (!articles.length) return;
     
-    const introduction = '## Industry News Summary\n\nThis week\'s curated news highlights significant developments across our key business fields. The following summary combines insights from multiple sources to provide a comprehensive overview of industry trends and innovations.';
+    const introduction = '## Industry News Summary\n\nThis week\'s curated news highlights significant developments across our key business fields.';
     
     const businessFieldSections: Record<string, Article[]> = {};
     articles.forEach(article => {
@@ -61,7 +53,7 @@ export default function DashboardPage() {
       return fieldIntro + fieldContent;
     });
     
-    const insights = "\n\n### Key Insights & Implications\n\n" + 
+    const insights = "\n\n### Key Insights\n\n" + 
       articles.flatMap(article => article.actionableInsights)
         .slice(0, 5)
         .map(insight => `- ${insight}`)
@@ -75,14 +67,13 @@ export default function DashboardPage() {
     try {
       const data = await mockDataService.getDashboardMetrics();
       setMetrics(data);
-      metricsRef.current = data;
       
       if (data.recentArticles.length > 0) {
         generateReport(data.recentArticles);
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      toastRef.current({
+      toast({
         title: "Error",
         description: "Failed to load dashboard data. Please try again.",
         variant: "destructive",
@@ -90,7 +81,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, []); // Empty dependency array since we use refs
+  }, [generateReport, toast]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -101,13 +92,13 @@ export default function DashboardPage() {
     setRefreshing(true);
     try {
       await fetchDashboardData();
-      toastRef.current({
+      toast({
         title: "Success",
         description: "Dashboard data refreshed successfully.",
       });
     } catch (error) {
       console.error('Error refreshing dashboard:', error);
-      toastRef.current({
+      toast({
         title: "Error",
         description: "Failed to refresh dashboard data. Please try again.",
         variant: "destructive",
@@ -129,7 +120,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container">
+    <div className="container max-w-7xl mx-auto px-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Executive Dashboard</h1>
         <Button 
@@ -144,8 +135,8 @@ export default function DashboardPage() {
         </Button>
       </div>
       
-      <Tabs defaultValue="summary">
-        <TabsList className="mb-6">
+      <Tabs defaultValue="summary" className="space-y-6">
+        <TabsList className="w-full">
           <TabsTrigger value="summary" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Metrics Summary
@@ -156,8 +147,8 @@ export default function DashboardPage() {
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="summary">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <TabsContent value="summary" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <MetricsCard
               title="Total Articles"
               value={metrics.totalArticles}
@@ -185,7 +176,7 @@ export default function DashboardPage() {
         </TabsContent>
         
         <TabsContent value="report">
-          <Card className="mb-6">
+          <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
@@ -194,12 +185,10 @@ export default function DashboardPage() {
                     Combined summary of all curated articles
                   </CardDescription>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {reportDate}
-                  </Badge>
-                </div>
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {reportDate}
+                </Badge>
               </div>
             </CardHeader>
             <CardContent>
@@ -235,7 +224,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-4">
             <Button variant="outline" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Export as PDF
