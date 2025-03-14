@@ -4,23 +4,7 @@ import { FileText, Share2, Workflow, Zap } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
-import mermaid from 'mermaid';
-
-// Dynamically import mermaid to avoid SSR issues
-const Mermaid = dynamic(
-  () => import('mermaid').then(mod => {
-    mod.default.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      flowchart: {
-        curve: 'basis',
-        padding: 20
-      }
-    });
-    return mod.default;
-  }),
-  { ssr: false }
-);
+import Script from 'next/script';
 
 const flowchartDefinitions = {
   workflow: `
@@ -84,8 +68,8 @@ const flowchartDefinitions = {
 export default function DocumentationPage() {
   useEffect(() => {
     const initMermaid = async () => {
+      const mermaid = (await import('mermaid')).default;
       mermaid.initialize({
-        startOnLoad: true,
         theme: 'dark',
         securityLevel: 'loose',
         flowchart: {
@@ -93,9 +77,9 @@ export default function DocumentationPage() {
           padding: 20
         }
       });
-      
-      // Force re-render of mermaid diagrams
-      await mermaid.run();
+      setTimeout(() => {
+        mermaid.run();
+      }, 100);
     };
     
     initMermaid();
@@ -313,88 +297,100 @@ export default function DocumentationPage() {
   ];
 
   return (
-    <div className="container max-w-4xl py-6">
-      <div className="flex items-center gap-2 mb-8">
-        <FileText className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-2xl font-bold">Documentation</h1>
-          <p className="text-muted-foreground">
-            Comprehensive system documentation and workflows
-          </p>
+    <>
+      <Script 
+        src='https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js'
+        strategy='afterInteractive'
+        onLoad={() => {
+          window.mermaid.initialize({
+            theme: 'dark',
+            securityLevel: 'loose'
+          });
+        }}
+      />
+      <div className='container max-w-4xl py-6'>
+        <div className="flex items-center gap-2 mb-8">
+          <FileText className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-2xl font-bold">Documentation</h1>
+            <p className="text-muted-foreground">
+              Comprehensive system documentation and workflows
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className='space-y-6'>
-        <Card>
-          <CardHeader>
-            <div className='flex items-center gap-2'>
-              <Workflow className='h-5 w-5' />
-              <div>
-                <CardTitle>System Flowcharts</CardTitle>
-                <CardDescription>Visual representation of system workflows and processes</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className='space-y-8'>
-            <div>
-              <h3 className='text-lg font-semibold mb-4'>Core Workflow</h3>
-              <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
-                <div className='mermaid'>
-                  {flowchartDefinitions.workflow}
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className='text-lg font-semibold mb-4'>API Integration Flow</h3>
-              <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
-                <div className='mermaid'>
-                  {flowchartDefinitions.apiFlow}
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className='text-lg font-semibold mb-4'>Pricing Structure</h3>
-              <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
-                <div className='mermaid'>
-                  {flowchartDefinitions.pricing}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {docs.map((section) => (
-          <Card key={section.id}>
+        <div className='space-y-6'>
+          <Card>
             <CardHeader>
-              <div className="flex items-center gap-2">
-                {section.icon}
+              <div className='flex items-center gap-2'>
+                <Workflow className='h-5 w-5' />
                 <div>
-                  <CardTitle>{section.title}</CardTitle>
-                  <CardDescription>{section.description}</CardDescription>
+                  <CardTitle>System Flowcharts</CardTitle>
+                  <CardDescription>Visual representation of system workflows and processes</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <Accordion type="single" collapsible className="space-y-2">
-                {section.sections.map((subsection, idx) => (
-                  <AccordionItem key={idx} value={`${section.id}-${idx}`}>
-                    <AccordionTrigger className="text-left">
-                      {subsection.title}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="pl-4 pt-2 text-muted-foreground whitespace-pre-line">
-                        {subsection.content}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+            <CardContent className='space-y-8'>
+              <div>
+                <h3 className='text-lg font-semibold mb-4'>Core Workflow</h3>
+                <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
+                  <div className='mermaid'>
+                    {flowchartDefinitions.workflow}
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className='text-lg font-semibold mb-4'>API Integration Flow</h3>
+                <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
+                  <div className='mermaid'>
+                    {flowchartDefinitions.apiFlow}
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className='text-lg font-semibold mb-4'>Pricing Structure</h3>
+                <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
+                  <div className='mermaid'>
+                    {flowchartDefinitions.pricing}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        ))}
+
+          {docs.map((section) => (
+            <Card key={section.id}>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  {section.icon}
+                  <div>
+                    <CardTitle>{section.title}</CardTitle>
+                    <CardDescription>{section.description}</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="space-y-2">
+                  {section.sections.map((subsection, idx) => (
+                    <AccordionItem key={idx} value={`${section.id}-${idx}`}>
+                      <AccordionTrigger className="text-left">
+                        {subsection.title}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="pl-4 pt-2 text-muted-foreground whitespace-pre-line">
+                          {subsection.content}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
