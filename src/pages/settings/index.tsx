@@ -1,8 +1,8 @@
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 
   Bot, 
@@ -10,7 +10,6 @@ import {
   Key, 
   Database,
   Settings as SettingsIcon,
-  Activity,
   BarChart 
 } from "lucide-react";
 import {
@@ -30,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
-  const toastRef = useRef(useToast());
+  const { toast } = useToast();
 
   const loadSettings = useCallback(async () => {
     try {
@@ -38,7 +37,7 @@ export default function SettingsPage() {
       setSettings(data);
     } catch (error) {
       console.error("Error loading settings:", error);
-      toastRef.current({
+      toast({
         title: "Error",
         description: "Failed to load settings. Please try again.",
         variant: "destructive",
@@ -46,7 +45,7 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     loadSettings();
@@ -58,13 +57,13 @@ export default function SettingsPage() {
       setSettings(data);
     } catch (error) {
       console.error("Error updating settings:", error);
-      toastRef.current({
+      toast({
         title: "Error",
         description: "Failed to update settings. Please try again.",
         variant: "destructive",
       });
     }
-  }, []);
+  }, [toast]);
 
   if (loading || !settings) {
     return (
