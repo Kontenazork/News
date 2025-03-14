@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
@@ -33,23 +32,37 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const toastRef = useRef(toast);
   const settingsRef = useRef<Settings | null>(null);
+  const unmountedRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      unmountedRef.current = true;
+    };
+  }, []);
   
   const fetchSettings = useCallback(async () => {
+    if (unmountedRef.current) return;
     try {
       const data = await mockDataService.getSettings();
-      setSettings(data);
-      settingsRef.current = data;
+      if (!unmountedRef.current) {
+        setSettings(data);
+        settingsRef.current = data;
+      }
     } catch (error) {
       console.error('Error fetching settings:', error);
-      toastRef.current({
-        title: 'Error',
-        description: 'Failed to load settings. Please try again.',
-        variant: 'destructive',
-      });
+      if (!unmountedRef.current) {
+        toastRef.current({
+          title: 'Error',
+          description: 'Failed to load settings. Please try again.',
+          variant: 'destructive',
+        });
+      }
     } finally {
-      setLoading(false);
+      if (!unmountedRef.current) {
+        setLoading(false);
+      }
     }
-  }, []); // Remove dependencies
+  }, []); // Remove toast dependency
 
   const handleUpdate = useCallback(() => {
     return fetchSettings();
