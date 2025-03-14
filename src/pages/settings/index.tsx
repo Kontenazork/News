@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,22 +30,26 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
 
   const loadSettings = useCallback(async () => {
     try {
       const data = await mockDataService.getSettings();
       setSettings(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error loading settings:", error);
-      toast({
+      toastRef.current({
         title: "Error",
         description: "Failed to load settings. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
-  }, [toast]);
+  }, []); // Remove toast from dependencies
 
   useEffect(() => {
     loadSettings();
@@ -57,13 +61,13 @@ export default function SettingsPage() {
       setSettings(data);
     } catch (error) {
       console.error("Error updating settings:", error);
-      toast({
+      toastRef.current({
         title: "Error",
         description: "Failed to update settings. Please try again.",
         variant: "destructive",
       });
     }
-  }, [toast]);
+  }, []); // Remove toast from dependencies
 
   if (loading || !settings) {
     return (

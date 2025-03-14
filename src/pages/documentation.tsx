@@ -1,20 +1,9 @@
 
+import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FileText, Share2, Workflow, Zap } from "lucide-react";
-import Script from "next/script";
-import { useEffect, useRef } from "react";
-
-interface MermaidConfig {
-  initialize: (config: any) => void;
-  run: () => Promise<void>;
-}
-
-declare global {
-  interface Window {
-    mermaid?: MermaidConfig;
-  }
-}
 
 const flowchartDefinitions = {
   workflow: `
@@ -75,30 +64,37 @@ const flowchartDefinitions = {
   `
 };
 
+const MermaidDiagram = dynamic(() => import("mermaid").then((mod) => {
+  mod.default.initialize({
+    theme: "dark",
+    securityLevel: "loose",
+    flowchart: {
+      curve: "basis",
+      padding: 20
+    }
+  });
+  return mod.default;
+}), { ssr: false });
+
 export default function DocumentationPage() {
   const initialized = useRef(false);
 
   useEffect(() => {
     if (!initialized.current && typeof window !== "undefined") {
       initialized.current = true;
-      
       const initMermaid = async () => {
         try {
-          const mermaid = await import("mermaid");
-          await mermaid.default.initialize({
-            theme: "dark",
-            securityLevel: "loose",
-            flowchart: {
-              curve: "basis",
-              padding: 20
-            }
+          await MermaidDiagram;
+          const elements = document.querySelectorAll(".mermaid");
+          elements.forEach(async (element) => {
+            await MermaidDiagram.render("mermaid-diagram-" + Math.random(), element.textContent || "", (svg) => {
+              element.innerHTML = svg;
+            });
           });
-          await mermaid.default.run();
         } catch (error) {
           console.error("Mermaid initialization error:", error);
         }
       };
-
       initMermaid();
     }
   }, []);
