@@ -31,37 +31,34 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const toastRef = useRef(toast);
 
+  // Memoize loadSettings to prevent recreation on every render
   const loadSettings = useCallback(async () => {
-    try {
-      const data = await mockDataService.getSettings();
-      setSettings(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error loading settings:', error);
-      toastRef.current({
-        title: 'Error',
-        description: 'Failed to load settings. Please try again.',
-        variant: 'destructive',
-      });
+    if (loading) {
+      try {
+        const data = await mockDataService.getSettings();
+        setSettings(data);
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        toastRef.current({
+          title: 'Error',
+          description: 'Failed to load settings. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
     }
-  }, []); // Remove toast from dependencies
+  }, [loading]); // Only depend on loading state
 
+  // Single effect for initial load
   useEffect(() => {
     loadSettings();
   }, [loadSettings]);
 
+  // Memoize update handler
   const handleUpdate = useCallback(async () => {
-    try {
-      await loadSettings();
-    } catch (error) {
-      console.error('Error updating settings:', error);
-      toastRef.current({
-        title: 'Error',
-        description: 'Failed to update settings. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  }, [loadSettings]);
+    setLoading(true); // Trigger reload
+  }, []);
 
   if (loading || !settings) {
     return (

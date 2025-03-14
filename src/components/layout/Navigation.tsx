@@ -17,6 +17,14 @@ interface NavigationProps {
 export function Navigation({ onItemClick }: NavigationProps) {
   const router = useRouter();
 
+  // Ensure exact path matching for index route
+  const isActivePath = (path: string) => {
+    if (path === '/') {
+      return router.pathname === '/';
+    }
+    return router.pathname.startsWith(path);
+  };
+
   return (
     <nav className="flex-1 space-y-2 px-2">
       {navigation.map((item) => (
@@ -25,7 +33,7 @@ export function Navigation({ onItemClick }: NavigationProps) {
           href={item.href}
           className={cn(
             "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-            router.pathname === item.href
+            isActivePath(item.href)
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           )}
@@ -34,8 +42,8 @@ export function Navigation({ onItemClick }: NavigationProps) {
           <item.icon
             className={cn(
               "mr-3 h-5 w-5",
-              router.pathname === item.href 
-                ? "text-primary-foreground" 
+              isActivePath(item.href)
+                ? "text-primary-foreground"
                 : "text-muted-foreground group-hover:text-accent-foreground"
             )}
             aria-hidden="true"

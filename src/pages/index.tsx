@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { DashboardMetrics, Article } from "@/types";
 import { mockDataService } from "@/services/mockData";
 import { MetricsCard } from "@/components/dashboard/MetricsCard";
@@ -31,6 +30,7 @@ export default function DashboardPage() {
   const [combinedReport, setCombinedReport] = useState<string | null>(null);
   const [reportDate, setReportDate] = useState<string>(new Date().toLocaleDateString());
   const { toast } = useToast();
+  const toastRef = useRef(toast);
 
   const generateReport = useCallback((articles: Article[]) => {
     if (!articles.length) return;
@@ -64,24 +64,27 @@ export default function DashboardPage() {
   }, []);
 
   const fetchDashboardData = useCallback(async () => {
-    try {
-      const data = await mockDataService.getDashboardMetrics();
-      setMetrics(data);
-      
-      if (data.recentArticles.length > 0) {
-        generateReport(data.recentArticles);
+    if (loading || refreshing) {
+      try {
+        const data = await mockDataService.getDashboardMetrics();
+        setMetrics(data);
+        
+        if (data.recentArticles.length > 0) {
+          generateReport(data.recentArticles);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        toastRef.current({
+          title: 'Error',
+          description: 'Failed to load dashboard data. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load dashboard data. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
     }
-  }, [generateReport, toast]);
+  }, [loading, refreshing]);
 
   useEffect(() => {
     fetchDashboardData();
