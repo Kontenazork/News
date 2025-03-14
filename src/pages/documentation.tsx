@@ -4,6 +4,7 @@ import { FileText, Share2, Workflow, Zap } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
+import mermaid from 'mermaid';
 
 // Dynamically import mermaid to avoid SSR issues
 const Mermaid = dynamic(
@@ -81,6 +82,18 @@ const flowchartDefinitions = {
 };
 
 export default function DocumentationPage() {
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      securityLevel: 'loose',
+      flowchart: {
+        curve: 'basis',
+        padding: 20
+      }
+    });
+  }, []);
+
   const docs = [
     {
       id: "workflow",
@@ -304,7 +317,47 @@ export default function DocumentationPage() {
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className='space-y-6'>
+        <Card>
+          <CardHeader>
+            <div className='flex items-center gap-2'>
+              <Workflow className='h-5 w-5' />
+              <div>
+                <CardTitle>System Flowcharts</CardTitle>
+                <CardDescription>Visual representation of system workflows and processes</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className='space-y-8'>
+            <div>
+              <h3 className='text-lg font-semibold mb-4'>Core Workflow</h3>
+              <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
+                <div className='mermaid'>
+                  {flowchartDefinitions.workflow}
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className='text-lg font-semibold mb-4'>API Integration Flow</h3>
+              <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
+                <div className='mermaid'>
+                  {flowchartDefinitions.apiFlow}
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className='text-lg font-semibold mb-4'>Pricing Structure</h3>
+              <div className='bg-muted p-4 rounded-lg overflow-x-auto'>
+                <div className='mermaid'>
+                  {flowchartDefinitions.pricing}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {docs.map((section) => (
           <Card key={section.id}>
             <CardHeader>
