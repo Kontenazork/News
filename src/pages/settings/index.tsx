@@ -30,22 +30,19 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const toastRef = useRef(toast);
-
-  useEffect(() => {
-    toastRef.current = toast;
-  }, [toast]);
-
+  const settingsRef = useRef<Settings | null>(null);
+  
   const fetchSettings = useCallback(async () => {
-    setLoading(true);
     try {
       const data = await mockDataService.getSettings();
       setSettings(data);
+      settingsRef.current = data;
     } catch (error) {
-      console.error("Error fetching settings:", error);
+      console.error('Error fetching settings:', error);
       toastRef.current({
-        title: "Error",
-        description: "Failed to load settings. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load settings. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);

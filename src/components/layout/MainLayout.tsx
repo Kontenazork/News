@@ -12,22 +12,21 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const routerEventsRef = useRef(router.events);
   
   useEffect(() => {
-    const start = () => setLoading(true);
-    const end = () => setLoading(false);
+    const handleStart = () => setLoading(true);
+    const handleComplete = () => setLoading(false);
     
-    routerEventsRef.current.on('routeChangeStart', start);
-    routerEventsRef.current.on('routeChangeComplete', end);
-    routerEventsRef.current.on('routeChangeError', end);
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
     
     return () => {
-      routerEventsRef.current.off('routeChangeStart', start);
-      routerEventsRef.current.off('routeChangeComplete', end);
-      routerEventsRef.current.off('routeChangeError', end);
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
     };
-  }, []); // Remove all dependencies
+  }, [router]);
 
   return (
     <div className="flex min-h-screen bg-background">
