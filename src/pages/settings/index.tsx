@@ -30,16 +30,15 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const toastRef = useRef(toast);
-  const settingsRef = useRef<Settings | null>(null);
   const unmountedRef = useRef(false);
-
+  const settingsRef = useRef<Settings | null>(null);
+  
   useEffect(() => {
     return () => {
       unmountedRef.current = true;
     };
   }, []);
-  
+
   const fetchSettings = useCallback(async () => {
     if (unmountedRef.current) return;
     try {
@@ -51,7 +50,7 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Error fetching settings:', error);
       if (!unmountedRef.current) {
-        toastRef.current({
+        toast({
           title: 'Error',
           description: 'Failed to load settings. Please try again.',
           variant: 'destructive',
