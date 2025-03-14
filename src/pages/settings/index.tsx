@@ -10,8 +10,6 @@ import {
   FileText, 
   Activity, 
   Database,
-  Building2,
-  GitBranch,
   Settings as SettingsIcon,
   Loader2
 } from "lucide-react";
