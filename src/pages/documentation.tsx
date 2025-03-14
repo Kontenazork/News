@@ -1,7 +1,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { FileText } from "lucide-react";
+import { FileText, Share2, Workflow, Zap } from "lucide-react";
+import Image from "next/image";
 
 export default function DocumentationPage() {
   const docs = [
@@ -9,6 +10,7 @@ export default function DocumentationPage() {
       id: "workflow",
       title: "System Workflow",
       description: "Understanding how the system processes and curates news",
+      icon: <Workflow className="h-5 w-5" />,
       sections: [
         {
           title: "Team Leader Role",
@@ -16,7 +18,8 @@ export default function DocumentationPage() {
           • Setting the base prompt for news curation
           • Configuring vector search parameters
           • Managing company branches and products
-          • Overseeing the overall curation strategy`
+          • Overseeing the overall curation strategy
+          • Reviewing and approving final outputs`
         },
         {
           title: "Assistant Role",
@@ -24,7 +27,8 @@ export default function DocumentationPage() {
           • Integrating with Perplexity API
           • Managing search parameters and keywords
           • Configuring trusted sources
-          • Processing search results`
+          • Processing search results
+          • Initial content filtering`
         },
         {
           title: "Editor Role",
@@ -32,7 +36,69 @@ export default function DocumentationPage() {
           • Content refinement and formatting
           • Relevance scoring
           • Priority and exclusion keyword management
-          • Final content presentation`
+          • Final content presentation
+          • Quality assurance`
+        }
+      ]
+    },
+    {
+      id: "system-flow",
+      title: "System Architecture & Flow",
+      description: "Detailed system architecture and data flow",
+      icon: <Share2 className="h-5 w-5" />,
+      sections: [
+        {
+          title: "Content Collection Flow",
+          content: `1. User Configuration
+          • Team Leader sets base parameters
+          • Assistant configures search criteria
+          • Editor defines relevance rules
+          
+          2. Data Gathering
+          • Perplexity API searches news sources
+          • RSS feeds are monitored
+          • Social media streams are tracked
+          • Competitor websites are analyzed
+          
+          3. Initial Processing
+          • Content is vectorized for semantic search
+          • Preliminary relevance scoring
+          • Duplicate detection
+          • Source verification`
+        },
+        {
+          title: "Processing Pipeline",
+          content: `1. Content Enhancement
+          • OpenAI processes raw content
+          • Key insights are extracted
+          • Summaries are generated
+          • Relevance scores are calculated
+          
+          2. Categorization
+          • Business field classification
+          • Topic clustering
+          • Trend identification
+          • Priority assignment
+          
+          3. Final Processing
+          • Editor reviews and refines
+          • Format standardization
+          • Quality checks
+          • Final approval`
+        },
+        {
+          title: "Output Generation",
+          content: `1. Report Generation
+          • Executive summaries created
+          • Trend analysis compiled
+          • Action items identified
+          • Competitive insights formatted
+          
+          2. Distribution
+          • Reports are stored in vector database
+          • Notifications are sent
+          • Dashboard is updated
+          • Archives are maintained`
         }
       ]
     },
@@ -40,63 +106,111 @@ export default function DocumentationPage() {
       id: "api-integration",
       title: "API Integration",
       description: "Understanding the external API integrations",
+      icon: <Zap className="h-5 w-5" />,
       sections: [
         {
           title: "OpenAI Integration",
-          content: `OpenAI is used for:
-          • Content processing and enhancement
+          content: `OpenAI API Flow:
+          1. Content Processing
+          • Raw text enhancement
+          • Structure standardization
+          • Key point extraction
+          
+          2. Analysis
           • Relevance scoring
           • Insight generation
-          • Summary creation`
+          • Summary creation
+          • Topic classification
+          
+          3. Enhancement
+          • Style consistency
+          • Clarity improvement
+          • Format standardization`
         },
         {
           title: "Perplexity Integration",
-          content: `Perplexity is used for:
-          • News article search and retrieval
-          • Content relevance analysis
+          content: `Perplexity API Flow:
+          1. Search Process
+          • Keyword-based search
+          • Semantic search
+          • Source filtering
+          
+          2. Content Analysis
+          • Relevance evaluation
           • Topic clustering
-          • Trend identification`
+          • Trend identification
+          • Duplicate detection
+          
+          3. Result Processing
+          • Content structuring
+          • Metadata extraction
+          • Priority scoring`
         },
         {
           title: "Vector Database Integration",
-          content: `Vector database (Pinecone/Weaviate/Qdrant) is used for:
-          • Semantic search capabilities
-          • Content similarity matching
-          • Historical context analysis
-          • Trend tracking`
+          content: `Vector Database Flow:
+          1. Content Vectorization
+          • Text embedding generation
+          • Metadata association
+          • Index management
+          
+          2. Search Operations
+          • Semantic similarity search
+          • Historical context matching
+          • Trend pattern detection
+          
+          3. Data Management
+          • Vector storage
+          • Index optimization
+          • Archive management`
         }
       ]
     },
     {
-      id: "data-processing",
-      title: "Data Processing",
-      description: "Understanding how data flows through the system",
+      id: "pricing",
+      title: "API Pricing & Usage",
+      description: "Understanding API costs and usage optimization",
+      icon: <FileText className="h-5 w-5" />,
       sections: [
         {
-          title: "Content Collection",
-          content: `The system collects content through:
-          • API-based news searches
-          • RSS feed monitoring
-          • Trusted source scanning
-          • Social media monitoring`
+          title: "OpenAI API Costs",
+          content: `Cost Breakdown:
+          • Text processing: $0.0005 per 1K tokens
+          • Content generation: $0.0015 per 1K tokens
+          • Embedding creation: $0.0001 per 1K tokens
+          
+          Usage Optimization:
+          • Batch processing for efficiency
+          • Token count optimization
+          • Caching frequently used results
+          • Rate limiting implementation`
         },
         {
-          title: "Processing Pipeline",
-          content: `Content processing involves:
-          • Initial relevance filtering
-          • Semantic analysis
-          • Category classification
-          • Insight extraction
-          • Summary generation`
+          title: "Perplexity API Costs",
+          content: `Cost Structure:
+          • Basic search: $0.05 per query
+          • Advanced search: $0.10 per query
+          • Streaming results: $0.15 per query
+          
+          Optimization Strategies:
+          • Query batching
+          • Result caching
+          • Search parameter optimization
+          • Request throttling`
         },
         {
-          title: "Output Generation",
-          content: `The system generates:
-          • Curated news summaries
-          • Relevance scores
-          • Action items
-          • Trend reports
-          • Competitive insights`
+          title: "Vector Database Costs",
+          content: `Pricing Factors:
+          • Storage volume
+          • Query frequency
+          • Vector dimensions
+          • Index updates
+          
+          Cost Management:
+          • Data lifecycle management
+          • Index optimization
+          • Query optimization
+          • Storage cleanup`
         }
       ]
     }
@@ -109,7 +223,7 @@ export default function DocumentationPage() {
         <div>
           <h1 className="text-2xl font-bold">Documentation</h1>
           <p className="text-muted-foreground">
-            System workflow and documentation
+            Comprehensive system documentation and workflows
           </p>
         </div>
       </div>
@@ -118,8 +232,13 @@ export default function DocumentationPage() {
         {docs.map((section) => (
           <Card key={section.id}>
             <CardHeader>
-              <CardTitle>{section.title}</CardTitle>
-              <CardDescription>{section.description}</CardDescription>
+              <div className="flex items-center gap-2">
+                {section.icon}
+                <div>
+                  <CardTitle>{section.title}</CardTitle>
+                  <CardDescription>{section.description}</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="space-y-2">
