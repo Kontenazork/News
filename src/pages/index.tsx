@@ -64,31 +64,29 @@ export default function DashboardPage() {
   }, []);
 
   const fetchDashboardData = useCallback(async () => {
-    if (loading || refreshing) {
-      try {
-        const data = await mockDataService.getDashboardMetrics();
-        setMetrics(data);
-        
-        if (data.recentArticles.length > 0) {
-          generateReport(data.recentArticles);
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        toastRef.current({
-          title: 'Error',
-          description: 'Failed to load dashboard data. Please try again.',
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
+    try {
+      const data = await mockDataService.getDashboardMetrics();
+      setMetrics(data);
+      
+      if (data.recentArticles.length > 0) {
+        generateReport(data.recentArticles);
       }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      toastRef.current({
+        title: 'Error',
+        description: 'Failed to load dashboard data. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [loading, refreshing]);
+  }, []); // Remove loading and refreshing from dependencies
 
   useEffect(() => {
     fetchDashboardData();
-  }, [fetchDashboardData]);
+  }, []); // Only run on mount
 
   const handleRefresh = async () => {
     if (refreshing) return;

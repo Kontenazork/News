@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,32 +68,40 @@ export default function DocumentationPage() {
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (!initialized.current && typeof window !== "undefined") {
-      initialized.current = true;
-      import("mermaid").then((mermaid) => {
-        mermaid.default.initialize({
-          theme: "dark",
-          securityLevel: "loose",
-          flowchart: {
-            curve: "basis",
-            padding: 20
-          }
-        });
-        
-        document.querySelectorAll(".mermaid").forEach(async (element) => {
-          try {
-            const { svg } = await mermaid.default.render(
-              `mermaid-${Math.random()}`,
-              element.textContent || ""
-            );
-            element.innerHTML = svg;
-          } catch (error) {
-            console.error("Mermaid rendering error:", error);
-          }
-        });
-      });
-    }
-  }, []);
+    const initMermaid = async () => {
+      if (!initialized.current && typeof window !== 'undefined') {
+        try {
+          const mermaid = (await import('mermaid')).default;
+          mermaid.initialize({
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: {
+              curve: 'basis',
+              padding: 20
+            }
+          });
+
+          document.querySelectorAll('.mermaid').forEach(async (element) => {
+            try {
+              const { svg } = await mermaid.render(
+                `mermaid-${Math.random()}`,
+                element.textContent || ''
+              );
+              element.innerHTML = svg;
+            } catch (error) {
+              console.error('Mermaid rendering error:', error);
+            }
+          });
+
+          initialized.current = true;
+        } catch (error) {
+          console.error('Mermaid initialization error:', error);
+        }
+      }
+    };
+
+    initMermaid();
+  }, []); // Run only on mount
 
   return (
     <>
