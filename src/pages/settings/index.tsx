@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Settings } from "@/types";
 import { mockDataService } from "@/services/mockData";
@@ -7,10 +8,10 @@ import {
   Bot, 
   Edit, 
   Key, 
-  Activity, 
   Database,
   Settings as SettingsIcon,
-  Loader2
+  Activity,
+  BarChart 
 } from "lucide-react";
 import {
   Accordion,
@@ -23,6 +24,7 @@ import { DatabaseSettingsForm } from "@/components/settings/DatabaseSettingsForm
 import { EditorSettingsForm } from "@/components/settings/EditorSettingsForm";
 import { AssistantSettingsForm } from "@/components/settings/AssistantSettingsForm";
 import { TeamLeaderSettingsForm } from "@/components/settings/TeamLeaderSettingsForm";
+import { CompetitorAnalysisForm } from "@/components/settings/CompetitorAnalysisForm";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function SettingsPage() {
@@ -47,7 +49,7 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }, []); // Remove toast dependency
+  }, []); // Remove dependencies
 
   const handleUpdate = useCallback(() => {
     return fetchSettings();
@@ -75,6 +77,13 @@ export default function SettingsPage() {
       description: "Configure base prompt and vector search refinement",
       icon: <Users className="h-5 w-5" />,
       component: <TeamLeaderSettingsForm settings={settings} onUpdate={handleUpdate} />
+    },
+    {
+      id: "competition",
+      title: "Competition Monitoring",
+      description: "Configure competitor tracking and analysis settings",
+      icon: <BarChart className="h-5 w-5" />,
+      component: <CompetitorAnalysisForm settings={settings} onUpdate={handleUpdate} />
     },
     {
       id: "assistant",
